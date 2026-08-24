@@ -83,3 +83,6 @@ Based on above JD, here is my application output:
 
 ![reject-1](<Screenshot 2026-08-24 at 11.17.01 PM.png>) 
 ![reject-2](<Screenshot 2026-08-24 at 11.17.06 PM.png>)
+
+## Added traceables to see tracings in langsmith studio as follows..
+![tracings](<Screenshot 2026-08-24 at 11.34.25 PM.png>)

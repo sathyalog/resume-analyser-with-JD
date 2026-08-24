@@ -8,12 +8,15 @@ from pydantic import BaseModel, Field
 from pypdf import PdfReader
 import streamlit as st
 from database import create_index
+from langsmith import traceable
 
 # 1. Load Environment Variables
-load_dotenv(override=True)
-pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-connect_database = create_index()
-print(pc.list_indexes())
+@traceable(name="load_environment_variables")
+def load_environment_variables():
+    load_dotenv(override=True)
+    pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+    connect_database = create_index()
+    print(pc.list_indexes())
 
 # 2. Configure Streamlit Page Layout
 st.set_page_config(
@@ -76,6 +79,7 @@ structured_model = llm.with_structured_output(ScreeningModel)
 
 
 # 5. Node definitions with safe state
+@traceable(name="analyse_resume_with_jd")
 def AnalyseResumeWithJD(state: ScreeningState) -> ScreeningState:
     resume_text = state.get("resume_text", "")
     job_description = state.get("job_description", "")
@@ -98,7 +102,7 @@ def AnalyseResumeWithJD(state: ScreeningState) -> ScreeningState:
         "job_title": output.job_title,
     }
 
-
+@traceable(name="check_criteria")
 def CheckCriteria(state: ScreeningState) -> Literal["ShortList", "Reject"]:
     skill_match = state.get("skill_match", 0.0)
     candidate_exp = state.get("candidate_experience", 0.0)
@@ -109,7 +113,7 @@ def CheckCriteria(state: ScreeningState) -> Literal["ShortList", "Reject"]:
     else:
         return "Reject"
 
-
+@traceable(name="shortlist")
 def ShortList(state: ScreeningState) -> ScreeningState:
     candidate_name = state.get("candidate_name", "Candidate")
     job_title = state.get("job_title", "Position")
@@ -117,7 +121,7 @@ def ShortList(state: ScreeningState) -> ScreeningState:
     st.success(message)
     return state
 
-
+@traceable(name="reject")
 def Reject(state: ScreeningState) -> ScreeningState:
     candidate_name = state.get("candidate_name", "Candidate")
     job_title = state.get("job_title", "Position")
