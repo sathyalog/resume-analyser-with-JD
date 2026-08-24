@@ -1,0 +1,85 @@
+# Resume Analyser with Job Description (JD) Matching
+
+A Streamlit-based LangGraph application designed to automatically analyze a candidate's resume against a Job Description (JD), evaluate skill compatibility, compare experience requirements, and route candidates through a deterministic decision graph (`ShortList` vs `Reject`).
+
+---
+
+## 📦 Imported Modules & Purpose
+
+| Module / Dependency | Purpose / Why it is used |
+| :--- | :--- |
+| `streamlit` (`st`) | Provides the web UI interface for document uploads (PDFs) and text input fields (JD). |
+| `langgraph.graph` (`START`, `END`, `StateGraph`) | Constructs the stateful execution graph and handles conditional routing based on criteria evaluations. |
+| `langchain_openrouter` (`ChatOpenRouter`) | Interfaces with LLM models hosted via OpenRouter (e.g., GPT-3.5 / GPT-4 family). |
+| `pydantic` (`BaseModel`, `Field`) | Defines the structured JSON output schema expected from the LLM extraction step. |
+| `typing` (`TypedDict`, `Literal`, `Optional`) | Provides static type annotations for state management across LangGraph nodes. |
+| `pinecone` (`Pinecone`) | Initializes the Pinecone vector client for downstream index management and retrieval tasks. |
+| `dotenv` (`load_dotenv`) | Loads environment credentials (`PINECONE_API_KEY`, API tokens) securely from `.env`. |
+| `database` (`create_index`) | Custom local database module to initialize vector database indexes. |
+| `os` | Reads system environment variables safely. |
+
+---
+
+## 🎯 What We Are Trying to Achieve
+
+1. **Automated Screening**: Extract key entities (`candidate_name`, `candidate_experience`, `job_title`, `experience_required`, `skill_match`) from unstructured PDF/Text inputs using LLM structured outputs.
+2. **Deterministic Graph Routing**: Use **LangGraph** conditional edges to assess candidate qualification rules:
+   * Candidate Experience $\ge$ Job Requirement
+   * Skill Similarity Score $\ge 0.50$
+3. **Automated Decision**: Route candidates dynamically to a `ShortList` or `Reject` workflow node.
+
+## How to run the code?
+`uv run streamlit run main.py`
+
+.env file should have:
+```
+OPENROUTER_API_KEY=sk-your-key
+LANGSMITH_API_KEY=ls-your-key
+LANGSMITH_TRACING=true
+LANGSMITH_PROJECT=resume-analyser
+PINECONE_API_KEY=pcsk_your-key
+```
+
+## How to test this?
+My resume I uploaded here is related to Advanced Agentic AI engineer CV with 14+ years of experience and tech stack is LangGraph, Pinecone, Azure, Python, Pydantic along with ReactJS, Nodejs, Azure.  Hence based on this I created 2 JD's one for shortlisting and another for rejection.
+
+### Shortlisting JD:
+Job Title: Lead AI / GenAI Engineer
+
+Job Overview:
+We are seeking a Lead AI Engineer with strong enterprise software engineering background to build production-grade autonomous agent systems and vector search applications.
+
+Key Responsibilities:
+- Design and deploy agent orchestration workflows using LangGraph and LangChain.
+- Implement advanced vector search and RAG architectures (Pinecone, Chroma DB, FAISS).
+- Build production-ready microservices and APIs with Python, FastAPI, and Azure Cloud.
+- Apply LLM safety guardrails, structured outputs (Pydantic), and semantic caching.
+
+Requirements:
+- 10+ years of total software development experience with at least 3+ years focused on GenAI and LLM systems.
+- Deep expertise in LangGraph, Python, Vector Databases, and Azure AI infrastructure.
+- Proven track record of architecting scalable enterprise backend platforms.
+
+Based on above JD, here is my application output:
+![shortlist-1](<Screenshot 2026-08-24 at 11.15.33 PM.png>) 
+![shortlist-2](<Screenshot 2026-08-24 at 11.15.50 PM.png>)
+
+### Rejection JD:
+Job Title: Principal AI Research Architect
+
+Job Overview:
+We are seeking a Principal AI Research Architect to lead advanced machine learning model training and hardware optimization for deep learning execution.
+
+Key Responsibilities:
+- Develop custom PyTorch C++ kernels and train LLMs from scratch on multi-node GPU clusters.
+- Optimize CUDA performance and Low-Level Virtual Machine (LLVM) compilers for neural network inference.
+- Conduct foundational mathematical research in non-Euclidean geometry and quantum computing algorithms.
+
+Requirements:
+- 18+ years of hands-on experience in low-level C++/CUDA systems programming and core deep learning research.
+- Proven record of training 100B+ parameter LLM base models from scratch.
+
+Based on above JD, here is my application output:
+
+![reject-1](<Screenshot 2026-08-24 at 11.17.01 PM.png>) 
+![reject-2](<Screenshot 2026-08-24 at 11.17.06 PM.png>)
