@@ -1,14 +1,17 @@
 import os
 from typing import Literal, Optional, TypedDict
+from database import create_index
 from dotenv import load_dotenv
+from helpers import extract_github_handle
 from langchain_openrouter import ChatOpenRouter
 from langgraph.graph import END, START, StateGraph
+from langsmith import traceable
+from mcp_github import run_github_mcp
 from pinecone import Pinecone
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
 import streamlit as st
-from database import create_index
-from langsmith import traceable
+
 
 # 1. Load Environment Variables
 @traceable(name="load_environment_variables")
@@ -17,6 +20,9 @@ def load_environment_variables():
     pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
     connect_database = create_index()
     print(pc.list_indexes())
+
+
+load_environment_variables()
 
 # 2. Configure Streamlit Page Layout
 st.set_page_config(
@@ -37,11 +43,29 @@ job_description_input = st.text_area(
     "Job Description", key="job_description", height=200
 )
 
-# Sidebar for file upload
+extracted_resume_text = ""
+github_username = None
+
+# Sidebar for file upload & GitHub handle detection
 with st.sidebar:
     uploaded_file = st.file_uploader("Upload your resume", type=["pdf"])
     if uploaded_file is not None:
         st.write("File uploaded successfully!")
+
+        # Extract text directly upon upload to detect GitHub handle
+        pdf_reader = PdfReader(uploaded_file)
+        for page in pdf_reader.pages:
+            extracted_resume_text += page.extract_text() or ""
+
+        github_username = extract_github_handle(extracted_resume_text)
+
+        st.divider()
+        st.subheader("Candidate Links Detected")
+        if github_username:
+            st.success(f"**GitHub Handle:** @{github_username}")
+            st.markdown(f"[View Profile](https://github.com/{github_username})")
+        else:
+            st.warning("No GitHub handle found in resume.")
 
 
 # 3. Pydantic Model for Structured Output
@@ -73,6 +97,8 @@ class ScreeningState(TypedDict, total=False):
     resume_text: Optional[str]
     job_description: Optional[str]
     email: Optional[str]
+    github_handle: Optional[str]
+    github_mcp_output: Optional[str]
 
 
 structured_model = llm.with_structured_output(ScreeningModel)
@@ -102,6 +128,7 @@ def AnalyseResumeWithJD(state: ScreeningState) -> ScreeningState:
         "job_title": output.job_title,
     }
 
+
 @traceable(name="check_criteria")
 def CheckCriteria(state: ScreeningState) -> Literal["ShortList", "Reject"]:
     skill_match = state.get("skill_match", 0.0)
@@ -113,6 +140,7 @@ def CheckCriteria(state: ScreeningState) -> Literal["ShortList", "Reject"]:
     else:
         return "Reject"
 
+
 @traceable(name="shortlist")
 def ShortList(state: ScreeningState) -> ScreeningState:
     candidate_name = state.get("candidate_name", "Candidate")
@@ -120,6 +148,7 @@ def ShortList(state: ScreeningState) -> ScreeningState:
     message = f"Shortlisted for {job_title} - {candidate_name}"
     st.success(message)
     return state
+
 
 @traceable(name="reject")
 def Reject(state: ScreeningState) -> ScreeningState:
@@ -152,16 +181,10 @@ if st.button("Analyze Candidate", type="primary"):
         st.warning("Please paste a Job Description.")
     else:
         with st.spinner("Analyzing resume against job description..."):
-            # Extract plain text from PDF
-            pdf_reader = PdfReader(uploaded_file)
-            extracted_resume_text = ""
-            for page in pdf_reader.pages:
-                extracted_resume_text += page.extract_text() or ""
-
-            # Prepare initial graph state
             initial_state: ScreeningState = {
                 "resume_text": extracted_resume_text,
                 "job_description": job_description_input,
+                "github_handle": github_username,
             }
 
             # Run LangGraph pipeline
@@ -185,3 +208,16 @@ if st.button("Analyze Candidate", type="primary"):
                     f"{final_state.get('experience_required', 0)} Years",
                 )
                 st.metric("Job Title Identified", final_state.get("job_title", "N/A"))
+
+            # Section for GitHub MCP Data Execution
+            st.divider()
+            st.subheader("GitHub MCP Analysis")
+            if github_username:
+                mcp_res = run_github_mcp(final_state)
+                mcp_result = mcp_res.get("github_mcp_output")
+                if mcp_result:
+                    st.markdown(mcp_result)
+                else:
+                    st.info("No GitHub data available.")
+            else:
+                st.warning("No GitHub handle found to query MCP server.")

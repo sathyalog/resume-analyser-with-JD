@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "dotenv>=0.9.9",
+    "langchain-mcp-adapters>=0.3.2",
     "langchain-openrouter>=0.2.8",
     "langgraph>=1.2.11",
     "pinecone>=9.1.0",

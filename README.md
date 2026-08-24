@@ -38,6 +38,7 @@ LANGSMITH_API_KEY=ls-your-key
 LANGSMITH_TRACING=true
 LANGSMITH_PROJECT=resume-analyser
 PINECONE_API_KEY=pcsk_your-key
+GITHUB_PERSONAL_ACCESS_TOKEN=your_github_token_here
 ```
 
 ## How to test this?
@@ -86,3 +87,11 @@ Based on above JD, here is my application output:
 
 ## Added traceables to see tracings in langsmith studio as follows..
 ![tracings](<Screenshot 2026-08-24 at 11.34.25 PM.png>)
+
+## MCP server integration
+The GitHub MCP (Model Context Protocol) integration connects your application directly to GitHub's external APIs via the @modelcontextprotocol/server-github server and langchain-mcp-adapters.
+
+By automatically extracting a candidate's GitHub handle from their uploaded resume, the application invokes prebuilt MCP tools (search_repositories and list_commits) using an asynchronous MultiServerMCPClient. This retrieves real-time repository metadata, programming languages, star counts, and recent 2026 commit activity without manual API wrapper maintenance, presenting live proof-of-work tables right alongside the LLM screening results.
+
+![MCP server integration](<Screenshot 2026-08-25 at 12.33.30 AM.png>) 
+![MCP](<Screenshot 2026-08-25 at 12.33.37 AM.png>)
