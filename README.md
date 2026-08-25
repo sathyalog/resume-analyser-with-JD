@@ -17,6 +17,8 @@ A Streamlit-based LangGraph application designed to automatically analyze a cand
 | `dotenv` (`load_dotenv`) | Loads environment credentials (`PINECONE_API_KEY`, API tokens) securely from `.env`. |
 | `database` (`create_index`) | Custom local database module to initialize vector database indexes. |
 | `os` | Reads system environment variables safely. |
+`firecrawl` (`Firecrawl`) | Scrapes job posting URLs dynamically into structured Markdown/JSON payloads using AI-powered web extraction. |
+| `beautifulsoup4` / `requests` | Acts as a deterministic HTTP fallback scraper when target domains (e.g., LinkedIn, Glassdoor) restrict third-party cloud scrapers. |
 
 ---
 
@@ -39,6 +41,7 @@ LANGSMITH_TRACING=true
 LANGSMITH_PROJECT=resume-analyser
 PINECONE_API_KEY=pcsk_your-key
 GITHUB_PERSONAL_ACCESS_TOKEN=your_github_token_here
+FIRECRAWL_API_KEY=fc-your-firecrawl-key
 ```
 
 ## How to test this?
@@ -144,6 +147,7 @@ This application incorporates a Deep Reflection Agent Pattern designed to conver
         GenerateRejectFeedback        FinalizeFeedback
 
 How It Works & Methods Introduced
+
 	1.	GenerateRejectFeedback: Analyzes gaps between the scrubbed resume and job description requirements using structured Pydantic models to identify missing core competencies and actionable skill-bridging advice.
 	2.	ReflectAndVerify: Functions as a senior hiring quality auditor. It inspects proposed feedback against the full resume to verify whether missing skills are genuinely absent or simply phrased using alternative industry terminology (e.g., verifying Containerization vs. Docker).
 	3.	ShouldContinueReflection: A conditional routing function that controls the multi-turn loop. The deep agent reflects and re-checks its feedback 2–3 times until the gap analysis is fully verified or maximum reflection passes are reached.
@@ -152,3 +156,25 @@ How It Works & Methods Introduced
 Finally after integrating deep agent, this is how system will show suggestions after rejection with proper skill gap analysis.
 
 ![deep-agent](<Screenshot 2026-08-25 at 6.39.12 PM.png>)
+
+### 🛠️ Dynamic Web Scraping Architecture
+
+### **How the Dynamic Web Scraping Pipeline Works**
+
+* **Self-Healing URL Ingestion**: Handles both open career portals and domain-restricted job pages without crashing the user interface or returning empty evaluations.
+* **Tier 1 — Firecrawl AI Extraction**: Ingests URL links and attempts structured extraction directly via Firecrawl's AI rendering engine into a validated `Pydantic` schema (`job_title`, `required_skills`, `years_experience_required`).
+* **Tier 2 — Deterministic BeautifulSoup Fallback**: If Firecrawl encounters anti-bot restrictions (e.g., LinkedIn, Glassdoor, or paywalled sites), the system catches the exception and immediately invokes a fallback HTTP scraper. It uses `requests` and `BeautifulSoup` to strip non-content tags (`<script>`, `<style>`, `<nav>`) and returns clean text directly to downstream LangGraph evaluation nodes.
+
+How the Web Scraping Flow Works
+	1.	User URL Submission: The recruiter enters a Job Description link directly into the Streamlit interface instead of manually copying and pasting raw text.
+	2.	Primary Route (Firecrawl AI Extraction):
+⚬	The URL is first passed to the Firecrawl API to attempt structured JSON/Markdown extraction using LLM-driven web rendering.
+⚬	If the site is accessible and supported, Firecrawl returns a structured JSON payload containing the job_title, years_experience_required, required_skills, and job_overview.
+	3.	Automated Fallback Trigger:
+⚬	If Firecrawl fails, raises a rate limit error, or gets blocked by domain policies (e.g., restricted access on sites like LinkedIn or Glassdoor), the application automatically catches the exception without crashing the UI.
+	4.	Secondary Route (BeautifulSoup / HTTP Scraper):
+⚬	The pipeline switches to a lightweight requests HTTP engine with standard browser headers to bypass cloud scraper locks.
+⚬	BeautifulSoup parses the target page DOM, strips away noisy boilerplate elements (
+	5.	LLM Ingestion: The extracted raw text is then passed downstream into your existing AnalyseResumeWithJD LangGraph node, letting the core LLM parse requirements deterministically.
+
+![firecrawl](<Screenshot 2026-08-26 at 12.14.10 AM.png>)

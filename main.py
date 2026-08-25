@@ -12,6 +12,8 @@ from pydantic import BaseModel, Field
 from pypdf import PdfReader
 from PII_detection import redact_pii_presidio
 import streamlit as st
+# Import Firecrawl extraction function from local file
+from firecrawl_scraping import extract_jd_from_url
 # Import Deep Agent Reflection Nodes
 from deepagent_feedback import (
     GenerateRejectFeedback,
@@ -45,10 +47,27 @@ st.caption(
 
 llm = ChatOpenRouter(model="gpt-3.5-turbo")
 
-# Input text area for Job Description
-job_description_input = st.text_area(
-    "Job Description", key="job_description", height=200
+# Input Mode Toggle (URL vs Paste Text)
+input_mode = st.radio(
+    "Select Job Description Input Method:",
+    ["URL Link", "Paste Text"],
+    horizontal=True
 )
+
+job_description_input = ""
+
+if input_mode == "URL Link":
+    jd_url = st.text_input(
+        "Job Posting URL", 
+        placeholder="https://www.linkedin.com/jobs/view/...",
+        key="jd_url"
+    )
+    if jd_url:
+        st.info("The Job Description will be parsed via Firecrawl when you analyze.")
+else:
+    job_description_input = st.text_area(
+        "Job Description Text", key="job_description", height=200
+    )
 
 extracted_resume_text = ""
 github_username = None
@@ -229,55 +248,80 @@ st.divider()
 if st.button("Analyze Candidate", type="primary"):
     if not uploaded_file:
         st.warning("Please upload a resume in PDF format.")
-    elif not job_description_input.strip():
+    elif input_mode == "URL Link" and not st.session_state.get("jd_url", "").strip():
+        st.warning("Please provide a valid Job Description URL.")
+    elif input_mode == "Paste Text" and not job_description_input.strip():
         st.warning("Please paste a Job Description.")
     else:
-        with st.spinner("Analyzing resume against job description..."):
-            initial_state: ScreeningState = {
-                "resume_text": extracted_resume_text,
-                "job_description": job_description_input,
-                "github_handle": github_username,
-                "reflection_count": 0
-            }
-
-            # Run LangGraph pipeline
-            final_state = resume_analyser_graph.invoke(initial_state)
-
-            # Display Extracted Metrics Breakdown
-            st.subheader("Analysis Breakdown")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric(
-                    "Candidate Experience",
-                    f"{final_state.get('candidate_experience', 0)} Years",
-                )
-                st.metric(
-                    "Skill Match Score",
-                    f"{round(final_state.get('skill_match', 0.0) * 100, 1)}%",
-                )
-            with col2:
-                st.metric(
-                    "Required Experience",
-                    f"{final_state.get('experience_required', 0)} Years",
-                )
-                st.metric("Job Title Identified", final_state.get("job_title", "N/A"))
+        final_jd_text = ""
+        # Parse URL via Firecrawl or use direct text
+        if input_mode == "URL Link":
+            target_url = st.session_state.get("jd_url").strip()
+            with st.spinner("Extracting Job Description from URL..."):
+                extracted_data = extract_jd_from_url(target_url)
                 
-            # Display Deep Agent Feedback if Rejected
-            feedback_output = final_state.get("rejection_feedback")
-            if feedback_output:
-                st.divider()
-                st.subheader("💡 Candidate Career Coaching & Skill Gap Analysis")
-                st.info(feedback_output)
-
-            # Section for GitHub MCP Data Execution
-            st.divider()
-            st.subheader("GitHub MCP Analysis")
-            if github_username:
-                mcp_res = run_github_mcp(final_state)
-                mcp_result = mcp_res.get("github_mcp_output")
-                if mcp_result:
-                    st.markdown(mcp_result)
+                if extracted_data and extracted_data.get("job_overview"):
+                    skills_str = ", ".join(extracted_data.get("required_skills", []))
+                    final_jd_text = f"""
+                    Job Title: {extracted_data.get('job_title', 'N/A')}
+                    Required Experience: {extracted_data.get('years_experience_required', 0)} years
+                    Required Skills: {skills_str}
+                    
+                    Overview:
+                    {extracted_data.get('job_overview', '')}
+                    """
+                    st.success("Successfully fetched Job Description!")
                 else:
-                    st.info("No GitHub data available.")
-            else:
-                st.warning("No GitHub handle found to query MCP server.")
+                    st.error("⚠️ This web domain (e.g., LinkedIn/Glassdoor) blocks automated scraping. Please switch input mode to 'Paste Text' and paste the Job Description manually.")
+                    final_jd_text = job_description_input
+        # Execute screening workflow if JD text is ready
+        if final_jd_text:
+            with st.spinner("Analyzing resume against job description..."):
+                initial_state: ScreeningState = {
+                    "resume_text": extracted_resume_text,
+                    "job_description": job_description_input,
+                    "github_handle": github_username,
+                    "reflection_count": 0
+                }
+
+                # Run LangGraph pipeline
+                final_state = resume_analyser_graph.invoke(initial_state)
+
+                # Display Extracted Metrics Breakdown
+                st.subheader("Analysis Breakdown")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric(
+                        "Candidate Experience",
+                        f"{final_state.get('candidate_experience', 0)} Years",
+                    )
+                    st.metric(
+                        "Skill Match Score",
+                        f"{round(final_state.get('skill_match', 0.0) * 100, 1)}%",
+                    )
+                with col2:
+                    st.metric(
+                        "Required Experience",
+                        f"{final_state.get('experience_required', 0)} Years",
+                    )
+                    st.metric("Job Title Identified", final_state.get("job_title", "N/A"))
+
+                # Display Deep Agent Feedback if Rejected
+                feedback_output = final_state.get("rejection_feedback")
+                if feedback_output:
+                    st.divider()
+                    st.subheader("💡 Candidate Career Coaching & Skill Gap Analysis")
+                    st.info(feedback_output)
+
+                # Section for GitHub MCP Data Execution
+                st.divider()
+                st.subheader("GitHub MCP Analysis")
+                if github_username:
+                    mcp_res = run_github_mcp(final_state)
+                    mcp_result = mcp_res.get("github_mcp_output")
+                    if mcp_result:
+                        st.markdown(mcp_result)
+                    else:
+                        st.info("No GitHub data available.")
+                else:
+                    st.warning("No GitHub handle found to query MCP server.")
