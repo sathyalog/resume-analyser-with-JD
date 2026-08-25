@@ -95,3 +95,7 @@ By automatically extracting a candidate's GitHub handle from their uploaded resu
 
 ![MCP server integration](<Screenshot 2026-08-25 at 12.33.30 AM.png>) 
 ![MCP](<Screenshot 2026-08-25 at 12.33.37 AM.png>)
+
+
+### Added Resume<->Github Matching score in application:
+![resume-github matching score](<Screenshot 2026-08-25 at 10.07.17 AM.png>)
