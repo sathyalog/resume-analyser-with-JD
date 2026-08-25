@@ -12,7 +12,13 @@ from pydantic import BaseModel, Field
 from pypdf import PdfReader
 from PII_detection import redact_pii_presidio
 import streamlit as st
-
+# Import Deep Agent Reflection Nodes
+from deepagent_feedback import (
+    GenerateRejectFeedback,
+    ReflectAndVerify,
+    ShouldContinueReflection,
+    FinalizeFeedbackNode
+)
 
 # 1. Load Environment Variables
 @traceable(name="load_environment_variables")
@@ -101,6 +107,10 @@ class ScreeningState(TypedDict, total=False):
     github_handle: Optional[str]
     github_mcp_output: Optional[str]
     pii_scrubbed: bool
+    evaluation_result: Dict[str, Any]
+    rejection_feedback: str
+    critique: str
+    reflection_count: int  # Loop counter for the deep agent
 
 
 structured_model = llm.with_structured_output(ScreeningModel)
@@ -174,21 +184,43 @@ def scrub_resume_pii_node(state: Dict[str, Any]) -> Dict[str, Any]:
     
     return {"pii_scrubbed": False}
 
-# 6. Graph Builder
+# 6. Graph Builder with PII detection nodes and Deep agent reflection loop
 builder = StateGraph(ScreeningState)
+
 # Add Nodes
 builder.add_node("scrub_pii", scrub_resume_pii_node)
 builder.add_node("AnalyseResumeWithJD", AnalyseResumeWithJD)
 builder.add_node("ShortList", ShortList)
 builder.add_node("Reject", Reject)
 
+# Deep Reflection Agent Nodes
+builder.add_node("GenerateRejectFeedback", GenerateRejectFeedback)
+builder.add_node("ReflectAndVerify", ReflectAndVerify)
+builder.add_node("FinalizeFeedback", FinalizeFeedbackNode)
 
-# Define Execution Edges
-builder.add_edge(START, "scrub_pii")                       # 1. Start execution at PII Scrubbing
-builder.add_edge("scrub_pii", "AnalyseResumeWithJD")       # 2. Pass cleaned text to Resume Analysis
-builder.add_conditional_edges("AnalyseResumeWithJD", CheckCriteria)  # 3. Route based on criteria match
-builder.add_edge("ShortList", END)                         # 4. Finish flow
-builder.add_edge("Reject", END)  
+# Primary Edges
+builder.add_edge(START, "scrub_pii")
+builder.add_edge("scrub_pii", "AnalyseResumeWithJD")
+builder.add_conditional_edges("AnalyseResumeWithJD", CheckCriteria)
+
+# Shortlist Pathway
+builder.add_edge("ShortList", END)
+
+# Rejection Reflection Pipeline
+builder.add_edge("Reject", "GenerateRejectFeedback")
+builder.add_edge("GenerateRejectFeedback", "ReflectAndVerify")
+
+# Multi-Turn Deep Reflection Routing Loop
+builder.add_conditional_edges(
+    "ReflectAndVerify",
+    ShouldContinueReflection,
+    {
+        "GenerateRejectFeedback": "GenerateRejectFeedback",
+        "FinalizeFeedback": "FinalizeFeedback"
+    }
+)
+
+builder.add_edge("FinalizeFeedback", END)
 
 resume_analyser_graph = builder.compile()
 
@@ -205,6 +237,7 @@ if st.button("Analyze Candidate", type="primary"):
                 "resume_text": extracted_resume_text,
                 "job_description": job_description_input,
                 "github_handle": github_username,
+                "reflection_count": 0
             }
 
             # Run LangGraph pipeline
@@ -228,6 +261,13 @@ if st.button("Analyze Candidate", type="primary"):
                     f"{final_state.get('experience_required', 0)} Years",
                 )
                 st.metric("Job Title Identified", final_state.get("job_title", "N/A"))
+                
+            # Display Deep Agent Feedback if Rejected
+            feedback_output = final_state.get("rejection_feedback")
+            if feedback_output:
+                st.divider()
+                st.subheader("💡 Candidate Career Coaching & Skill Gap Analysis")
+                st.info(feedback_output)
 
             # Section for GitHub MCP Data Execution
             st.divider()

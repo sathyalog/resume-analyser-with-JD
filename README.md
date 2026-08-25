@@ -117,4 +117,38 @@ Implementing PII (Personally Identifiable Information) detection ensures sensiti
 ⚬	Simple middleware wrappers often rely on standard regex for basic patterns (emails, phone numbers).
 ⚬	Presidio identifies complex, context-dependent entities like personal names (PERSON), physical addresses (LOCATION), and region-specific IDs (UK_NINO, US_SSN) by analyzing surrounding sentence structure.
 
+### 🧠 Deep Agent Reflection & Candidate Feedback Loop
+This application incorporates a Deep Reflection Agent Pattern designed to convert raw rejection outcomes into constructive candidate feedback. Rather than serving static rejection messages, the pipeline initiates a multi-turn reasoning loop using LangGraph to evaluate missing job requirements and suggest targeted skill improvements.
 
+                  ┌──────────────────────────────┐
+                  │   Candidate Evaluated: REJECT│
+                  └──────────────┬───────────────┘
+                                 │
+                                 ▼
+                   ┌───────────────────────────┐
+                   │   GenerateRejectFeedback  │
+                   └─────────────┬─────────────┘
+                                 │
+                                 ▼
+                   ┌───────────────────────────┐
+                   │     ReflectAndVerify      │
+                   └─────────────┬─────────────┘
+                                 │
+                   ┌─────────────┴─────────────┐
+                   │  ShouldContinueReflection │
+                   └─────────────┬─────────────┘
+                                 │
+                    ┌────────────┴────────────┐
+                    ▼                         ▼
+            [Iterate 2-3x]           [Feedback Verified]
+        GenerateRejectFeedback        FinalizeFeedback
+
+How It Works & Methods Introduced
+	1.	GenerateRejectFeedback: Analyzes gaps between the scrubbed resume and job description requirements using structured Pydantic models to identify missing core competencies and actionable skill-bridging advice.
+	2.	ReflectAndVerify: Functions as a senior hiring quality auditor. It inspects proposed feedback against the full resume to verify whether missing skills are genuinely absent or simply phrased using alternative industry terminology (e.g., verifying Containerization vs. Docker).
+	3.	ShouldContinueReflection: A conditional routing function that controls the multi-turn loop. The deep agent reflects and re-checks its feedback 2–3 times until the gap analysis is fully verified or maximum reflection passes are reached.
+	4.	FinalizeFeedbackNode: Formats the verified, hallucination-checked feedback for display on the recruiter UI.
+
+Finally after integrating deep agent, this is how system will show suggestions after rejection with proper skill gap analysis.
+
+![deep-agent](<Screenshot 2026-08-25 at 6.39.12 PM.png>)
