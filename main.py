@@ -1,5 +1,5 @@
 import os
-from typing import Literal, Optional, TypedDict
+from typing import Literal, Optional, TypedDict, Dict, Any
 from database import create_index
 from dotenv import load_dotenv
 from helpers import extract_github_handle
@@ -10,6 +10,7 @@ from mcp_github import run_github_mcp
 from pinecone import Pinecone
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
+from PII_detection import redact_pii_presidio
 import streamlit as st
 
 
@@ -27,7 +28,7 @@ load_environment_variables()
 # 2. Configure Streamlit Page Layout
 st.set_page_config(
     page_title="Resume Analyser with JD",
-    page_icon="👋",
+    page_icon="🔍",
     layout="centered",
 )
 
@@ -158,17 +159,35 @@ def Reject(state: ScreeningState) -> ScreeningState:
     st.error(message)
     return state
 
+@traceable(name="scrub_resume_pii_node")
+def scrub_resume_pii_node(state: Dict[str, Any]) -> Dict[str, Any]:
+    raw_resume_text = state.get("resume_text", "")
+    
+    if raw_resume_text:
+        # Scrub sensitive data before passing to OpenRouter/LLM nodes
+        cleaned_text = redact_pii_presidio(raw_resume_text)
+        return {
+            "resume_text": cleaned_text,
+            "pii_scrubbed": True
+        }
+    
+    return {"pii_scrubbed": False}
 
 # 6. Graph Builder
 builder = StateGraph(ScreeningState)
+# Add Nodes
+builder.add_node("scrub_pii", scrub_resume_pii_node)
 builder.add_node("AnalyseResumeWithJD", AnalyseResumeWithJD)
 builder.add_node("ShortList", ShortList)
 builder.add_node("Reject", Reject)
 
-builder.add_edge(START, "AnalyseResumeWithJD")
-builder.add_conditional_edges("AnalyseResumeWithJD", CheckCriteria)
-builder.add_edge("ShortList", END)
-builder.add_edge("Reject", END)
+
+# Define Execution Edges
+builder.add_edge(START, "scrub_pii")                       # 1. Start execution at PII Scrubbing
+builder.add_edge("scrub_pii", "AnalyseResumeWithJD")       # 2. Pass cleaned text to Resume Analysis
+builder.add_conditional_edges("AnalyseResumeWithJD", CheckCriteria)  # 3. Route based on criteria match
+builder.add_edge("ShortList", END)                         # 4. Finish flow
+builder.add_edge("Reject", END)  
 
 resume_analyser_graph = builder.compile()
 

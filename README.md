@@ -97,5 +97,21 @@ By automatically extracting a candidate's GitHub handle from their uploaded resu
 ![MCP](<Screenshot 2026-08-25 at 12.33.37 AM.png>)
 
 
-### Added Resume<->Github Matching score in application:
+#### Added Resume<->Github Matching score in application:
 ![resume-github matching score](<Screenshot 2026-08-25 at 10.07.17 AM.png>)
+
+#### Introducing PII Detection
+Implementing PII (Personally Identifiable Information) detection ensures sensitive candidate data from resume—such as phone numbers, email addresses, physical addresses, and national identity numbers—is scrubbed before reaching external LLMs, vector databases, or logs.
+
+Selecting the PII Detection engine
+Microsoft Presidio: https://presidio.dataprivacystack.org/
+Langchain PII Middleware: from langchain.agents.middleware import PIIMiddleware
+
+1.	Framework Boundary vs. Engine Depth
+⚬	LangChain Middleware is an interceptor pattern. It automatically hooks into LangChain agent steps to scrub text before sending prompts to the model or passing arguments to tools.
+⚬	Microsoft Presidio is an detection & anonymization engine. It doesn't care whether you are using LangGraph, FastAPI, or a basic Python script; it focuses on identifying sensitive entities with precision using Machine Learning and NLP.
+	2.	Detection Quality & Entity Coverage
+⚬	Simple middleware wrappers often rely on standard regex for basic patterns (emails, phone numbers).
+⚬	Presidio identifies complex, context-dependent entities like personal names (PERSON), physical addresses (LOCATION), and region-specific IDs (UK_NINO, US_SSN) by analyzing surrounding sentence structure.
+
+

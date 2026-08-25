@@ -88,7 +88,7 @@ def check_resume_github_skills_match(resume_skills: List[str], repo_items: List[
     if matched_skills:
         skills_str = ", ".join(list(set(matched_skills)))
         return (
-            f"> 💡 **Resume GitHub Matching Score:** **Yes**, skills are exhibited in GitHub as well.\n"
+            f"> 💡 **Resume GitHub Matching Score:** **Yes**, Candidate skills are verified in GitHub public repositories.\n"
             f"> **Matched Skills Found:** `{skills_str}`\n"
         )
     else:
