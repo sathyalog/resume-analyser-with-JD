@@ -1,6 +1,33 @@
 # Resume Analyser with Job Description (JD) Matching
 
-A Streamlit-based LangGraph application designed to automatically analyze a candidate's resume against a Job Description (JD), evaluate skill compatibility, compare experience requirements, and route candidates through a deterministic decision graph (`ShortList` vs `Reject`).
+A Streamlit-based LangGraph application designed to automatically analyze a candidate's resume against a Job Description (JD), evaluate skill compatibility, compare experience requirements, and route candidates through a deterministic decision graph (`ShortList` vs `Reject`). 
+
+It features an intelligent multi-input ingestion pipeline—accepting either raw text or direct Job Posting URLs—backed by an AI-driven web scraper with deterministic fallback engines, automated PII scrubbing, live GitHub profile verification, and a multi-turn deep reflection agent for candidate career coaching.
+
+---
+
+## 🎯 What We Are Trying to Achieve
+
+1. **Flexible Job Ingestion & Web Scraping**:
+   * Allow recruiters to evaluate candidates using either raw text JDs or direct job posting URLs.
+   * Provide a **self-healing dynamic scraping pipeline**: Attempts AI structured extraction via **Firecrawl API** first, and seamlessly falls back to a custom **BeautifulSoup / HTTP** scraper to extract raw job descriptions from bot-restricted domain pages (e.g., LinkedIn, Glassdoor).
+
+2. **Privacy-Preserving Entity Extraction**:
+   * Sanitize candidate resumes before sending data to external LLMs using **Microsoft Presidio PII Detection** to scrub sensitive identifiers (phone numbers, addresses, personal emails).
+   * Extract grounded entities (`candidate_name`, `candidate_experience`, `job_title`, `experience_required`, `skill_match`) using structured **Pydantic** LLM output models.
+
+3. **Deterministic Graph Routing**:
+   * Orchestrate execution using **LangGraph** conditional edges based on explicit hiring rules:
+     * Candidate Experience $\ge$ Job Requirement
+     * Skill Match Score $\ge 0.50$
+   * Automatically route candidates to a `ShortList` or `Reject` workflow node.
+
+4. **Deep Reflection & Candidate Coaching**:
+   * Execute a multi-turn reflection loop (**Deep Agent Pattern**) for rejected candidates to analyze core skill gaps, audit false negatives against alternative terminology, and generate constructive, actionable feedback.
+
+5. **Live Candidate Proof-of-Work Verification**:
+   * Detect GitHub handles from resumes automatically and query external GitHub APIs via an asynchronous **Model Context Protocol (MCP)** client to display real-time commit history, repository language distributions, and repository star metrics.
+
 
 ---
 
@@ -21,14 +48,6 @@ A Streamlit-based LangGraph application designed to automatically analyze a cand
 | `beautifulsoup4` / `requests` | Acts as a deterministic HTTP fallback scraper when target domains (e.g., LinkedIn, Glassdoor) restrict third-party cloud scrapers. |
 
 ---
-
-## 🎯 What We Are Trying to Achieve
-
-1. **Automated Screening**: Extract key entities (`candidate_name`, `candidate_experience`, `job_title`, `experience_required`, `skill_match`) from unstructured PDF/Text inputs using LLM structured outputs.
-2. **Deterministic Graph Routing**: Use **LangGraph** conditional edges to assess candidate qualification rules:
-   * Candidate Experience $\ge$ Job Requirement
-   * Skill Similarity Score $\ge 0.50$
-3. **Automated Decision**: Route candidates dynamically to a `ShortList` or `Reject` workflow node.
 
 ## How to run the code?
 `uv run streamlit run main.py`
@@ -165,16 +184,21 @@ Finally after integrating deep agent, this is how system will show suggestions a
 * **Tier 1 — Firecrawl AI Extraction**: Ingests URL links and attempts structured extraction directly via Firecrawl's AI rendering engine into a validated `Pydantic` schema (`job_title`, `required_skills`, `years_experience_required`).
 * **Tier 2 — Deterministic BeautifulSoup Fallback**: If Firecrawl encounters anti-bot restrictions (e.g., LinkedIn, Glassdoor, or paywalled sites), the system catches the exception and immediately invokes a fallback HTTP scraper. It uses `requests` and `BeautifulSoup` to strip non-content tags (`<script>`, `<style>`, `<nav>`) and returns clean text directly to downstream LangGraph evaluation nodes.
 
-How the Web Scraping Flow Works
+**How the Web Scraping Flow Works:**
+
 	1.	User URL Submission: The recruiter enters a Job Description link directly into the Streamlit interface instead of manually copying and pasting raw text.
+
 	2.	Primary Route (Firecrawl AI Extraction):
 ⚬	The URL is first passed to the Firecrawl API to attempt structured JSON/Markdown extraction using LLM-driven web rendering.
 ⚬	If the site is accessible and supported, Firecrawl returns a structured JSON payload containing the job_title, years_experience_required, required_skills, and job_overview.
+
 	3.	Automated Fallback Trigger:
 ⚬	If Firecrawl fails, raises a rate limit error, or gets blocked by domain policies (e.g., restricted access on sites like LinkedIn or Glassdoor), the application automatically catches the exception without crashing the UI.
+
 	4.	Secondary Route (BeautifulSoup / HTTP Scraper):
 ⚬	The pipeline switches to a lightweight requests HTTP engine with standard browser headers to bypass cloud scraper locks.
-⚬	BeautifulSoup parses the target page DOM, strips away noisy boilerplate elements (
+⚬	BeautifulSoup parses the target page DOM, strips away noisy boilerplate elements 
+
 	5.	LLM Ingestion: The extracted raw text is then passed downstream into your existing AnalyseResumeWithJD LangGraph node, letting the core LLM parse requirements deterministically.
 
 ![firecrawl](<Screenshot 2026-08-26 at 12.14.10 AM.png>)
