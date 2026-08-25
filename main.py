@@ -100,6 +100,7 @@ class ScreeningState(TypedDict, total=False):
     email: Optional[str]
     github_handle: Optional[str]
     github_mcp_output: Optional[str]
+    pii_scrubbed: bool
 
 
 structured_model = llm.with_structured_output(ScreeningModel)
