@@ -207,3 +207,8 @@ Finally after integrating deep agent, this is how system will show suggestions a
 * **Anthropic Integration:** Upgraded model execution pipeline to native `langchain-anthropic` (`claude-haiku-4-5-20251001`) for faster latency, lower token unit costs, and strict Pydantic structured output validation.
 * **Token-Optimized Web Scraping:** Implemented native Firecrawl filtering (`onlyMainContent=True`, DOM tag exclusion) alongside regex-based markdown compression to strip boilerplate UI noise, cutting context size by over 60%.
 * **Deterministic Fallback Extraction:** Enhanced scraping pipelines with automated heuristic fallbacks to reliably infer job metadata (titles and experience baselines) when scraping restricted or low-context web pages.
+
+## UI Improvements:
+Show company info, role and required experience in one section and similarly candidate details in separate section as follows.
+
+![new-ui](<Screenshot 2026-08-26 at 12.56.17 PM.png>)

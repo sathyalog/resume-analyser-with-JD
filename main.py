@@ -3,6 +3,7 @@ from typing import Literal, Optional, TypedDict, Dict, Any
 from database import create_index
 from dotenv import load_dotenv
 from helpers import extract_github_handle
+
 # from langchain_openrouter import ChatOpenRouter
 from langchain_anthropic import ChatAnthropic
 from langgraph.graph import END, START, StateGraph
@@ -13,15 +14,18 @@ from pydantic import BaseModel, Field
 from pypdf import PdfReader
 from PII_detection import redact_pii_presidio
 import streamlit as st
+
 # Import Firecrawl extraction function from local file
 from firecrawl_scraping import extract_jd_from_url
+
 # Import Deep Agent Reflection Nodes
 from deepagent_feedback import (
     GenerateRejectFeedback,
     ReflectAndVerify,
     ShouldContinueReflection,
-    FinalizeFeedbackNode
+    FinalizeFeedbackNode,
 )
+
 
 # 1. Load Environment Variables
 @traceable(name="load_environment_variables")
@@ -50,23 +54,21 @@ st.caption(
 llm = ChatAnthropic(
     model="claude-haiku-4-5-20251001",  # Active low-cost Haiku model
     temperature=0,
-    max_tokens=500
+    max_tokens=500,
 )
 
 # Input Mode Toggle (URL vs Paste Text)
 input_mode = st.radio(
-    "Select Job Description Input Method:",
-    ["URL Link", "Paste Text"],
-    horizontal=True
+    "Select Job Description Input Method:", ["URL Link", "Paste Text"], horizontal=True
 )
 
 job_description_input = ""
 
 if input_mode == "URL Link":
     jd_url = st.text_input(
-        "Job Posting URL", 
+        "Job Posting URL",
         placeholder="https://www.linkedin.com/jobs/view/...",
-        key="jd_url"
+        key="jd_url",
     )
     if jd_url:
         st.info("The Job Description will be parsed via Firecrawl when you analyze.")
@@ -102,19 +104,24 @@ with st.sidebar:
 
 # 3. Pydantic Model for Structured Output
 class ScreeningModel(BaseModel):
-    candidate_name: str = Field(description="Name of the candidate")
+    company_name: str = Field(
+        description="Name of the hiring company. Infer from email domains, text headers, or context. DO NOT output '<UNKNOWN>'. Use 'Not Specified' if impossible to identify."
+    )
+    candidate_name: str = Field(
+        description="Full name of the candidate extracted from the top of the resume. DO NOT output '<UNKNOWN>'."
+    )
     job_title: str = Field(
-        description="Job title mentioned in job description"
+        description="Job title mentioned in the job description. Infer from context if necessary. DO NOT output '<UNKNOWN>'."
     )
     candidate_experience: float = Field(
-        description="Working experience of the candidate as per the resume in years"
+        description="Total working experience of the candidate in years based on resume dates."
     )
     experience_required: Optional[float] = Field(
-        default=None, 
-        description="Years of experience required. Set to None if unknown."
+        default=8.0,
+        description="Years of experience required. If unstated, infer from title level (e.g., Lead = 8.0).",
     )
     skill_match: float = Field(
-        description="Skill match score of the candidate. Value must be between 0 and 1",
+        description="Skill match score between candidate and job requirements from 0.0 to 1.0.",
         ge=0,
         le=1,
     )
@@ -122,6 +129,7 @@ class ScreeningModel(BaseModel):
 
 # 4. TypedDict State
 class ScreeningState(TypedDict, total=False):
+    company_name: Optional[str]
     candidate_name: Optional[str]
     job_title: Optional[str]
     candidate_experience: Optional[float]
@@ -149,21 +157,26 @@ def AnalyseResumeWithJD(state: ScreeningState) -> ScreeningState:
     job_description = state.get("job_description", "")
 
     prompt = f"""
-    You are an expert technical recruiter analyzing a Job Description against a Candidate Resume.
+    You are an expert technical recruiter parsing a Resume and a Job Description.
 
-    1. `job_title`: Extract the exact position title (e.g., "Lead AI Engineer"). DO NOT output '<UNKNOWN>'.
-    2. `experience_required`: Extract minimum years of experience as a float. If no explicit number is written, infer it from the title seniority (e.g., Lead = 8.0, Senior = 5.0, Mid = 3.0). DO NOT output words like 'None' or '<UNKNOWN>'.
-    3. `skill_match`: Calculate a float between 0.0 and 1.0 based on technical overlap (e.g., Azure, Python, RAG, Vector DBs).
-    
-    Resume Text:
+    CRITICAL INSTRUCTIONS:
+    1. `candidate_name`: Extract the full name located at the top of the resume text.
+    2. `company_name`: Identify the company hiring for this role. Check headers, job intro, copyright statements, or email/URL mentions. Return "Not Specified" if absent—NEVER output '<UNKNOWN>'.
+    3. `job_title`: Extract the target role title (e.g., "Lead AI Engineer"). NEVER output '<UNKNOWN>'.
+    4. `candidate_experience`: Calculate total professional years from the resume.
+    5. `experience_required`: Extract required minimum experience. Infer based on seniority if unstated (Lead=8, Senior=5, Mid=3).
+    6. `skill_match`: Compute technical skill overlap between 0.0 and 1.0.
+
+    Candidate Resume Text:
     {resume_text}
-    
-    Job Description:
+
+    Job Description Text:
     {job_description}
     """
     output: ScreeningModel = structured_model.invoke(prompt)
 
     return {
+        "company_name": output.company_name,
         "candidate_name": output.candidate_name,
         "skill_match": output.skill_match,
         "candidate_experience": output.candidate_experience,
@@ -186,9 +199,10 @@ def CheckCriteria(state: ScreeningState) -> Literal["ShortList", "Reject"]:
 
 @traceable(name="shortlist")
 def ShortList(state: ScreeningState) -> ScreeningState:
-    candidate_name = state.get("candidate_name", "Candidate")
-    job_title = state.get("job_title", "Position")
-    message = f"Shortlisted for {job_title} - {candidate_name}"
+    candidate_name = state.get("candidate_name") or "Candidate"
+    job_title = state.get("job_title") or "Position"
+    company_name = state.get("company_name") or "Company"
+    message = f"Shortlisted for {job_title} at {company_name} - {candidate_name}"
     st.success(message)
     return state
 
@@ -197,23 +211,23 @@ def ShortList(state: ScreeningState) -> ScreeningState:
 def Reject(state: ScreeningState) -> ScreeningState:
     candidate_name = state.get("candidate_name", "Candidate")
     job_title = state.get("job_title", "Position")
-    message = f"Rejected for {job_title} - {candidate_name}"
+    company_name = state.get("company_name", "Company")
+    message = f"Rejected for {job_title} at {company_name} - {candidate_name}"
     st.error(message)
     return state
+
 
 @traceable(name="scrub_resume_pii_node")
 def scrub_resume_pii_node(state: Dict[str, Any]) -> Dict[str, Any]:
     raw_resume_text = state.get("resume_text", "")
-    
+
     if raw_resume_text:
         # Scrub sensitive data before passing to OpenRouter/LLM nodes
         cleaned_text = redact_pii_presidio(raw_resume_text)
-        return {
-            "resume_text": cleaned_text,
-            "pii_scrubbed": True
-        }
-    
+        return {"resume_text": cleaned_text, "pii_scrubbed": True}
+
     return {"pii_scrubbed": False}
+
 
 # 6. Graph Builder with PII detection nodes and Deep agent reflection loop
 builder = StateGraph(ScreeningState)
@@ -247,8 +261,8 @@ builder.add_conditional_edges(
     ShouldContinueReflection,
     {
         "GenerateRejectFeedback": "GenerateRejectFeedback",
-        "FinalizeFeedback": "FinalizeFeedback"
-    }
+        "FinalizeFeedback": "FinalizeFeedback",
+    },
 )
 
 builder.add_edge("FinalizeFeedback", END)
@@ -271,7 +285,7 @@ if st.button("Analyze Candidate", type="primary"):
             target_url = st.session_state.get("jd_url").strip()
             with st.spinner("Extracting Job Description from URL..."):
                 extracted_data = extract_jd_from_url(target_url)
-                
+
                 if extracted_data and extracted_data.get("job_overview"):
                     skills_str = ", ".join(extracted_data.get("required_skills", []))
                     final_jd_text = f"""
@@ -284,56 +298,73 @@ if st.button("Analyze Candidate", type="primary"):
                     """
                     st.success("Successfully fetched Job Description!")
                 else:
-                    st.error("⚠️ This web domain (e.g., LinkedIn/Glassdoor) blocks automated scraping. Please switch input mode to 'Paste Text' and paste the Job Description manually.")
+                    st.error(
+                        "⚠️ This web domain (e.g., LinkedIn/Glassdoor) blocks automated scraping. Please switch input mode to 'Paste Text' and paste the Job Description manually."
+                    )
                     final_jd_text = job_description_input
+        else:
+            final_jd_text = job_description_input
+
         # Execute screening workflow if JD text is ready
         if final_jd_text:
             with st.spinner("Analyzing resume against job description..."):
                 initial_state: ScreeningState = {
                     "resume_text": extracted_resume_text,
-                    "job_description": job_description_input,
+                    "job_description": final_jd_text,
                     "github_handle": github_username,
-                    "reflection_count": 0
+                    "reflection_count": 0,
                 }
 
                 # Run LangGraph pipeline
                 final_state = resume_analyser_graph.invoke(initial_state)
 
-                # Display Extracted Metrics Breakdown
-                st.subheader("Analysis Breakdown")
-                col1, col2 = st.columns(2)
-                with col1:
+            # Display Structured Metrics Breakdown
+            st.subheader("Analysis Breakdown")
+
+            # Section 1: Company Details Container
+            with st.container(border=True):
+                st.caption("🏢 **COMPANY DETAILS (JOB POSTING)**")
+                c_col1, c_col2 = st.columns(2)
+                with c_col1:
+                    st.metric("Company Name", final_state.get("company_name", "N/A"))
+                with c_col2:
+                    st.metric("Role Title", final_state.get("job_title", "N/A"))
+                st.metric(
+                    "Required Exp.",
+                    f"{final_state.get('experience_required', 0)} Yrs",
+                )
+            # Section 2: Candidate Details Container
+            with st.container(border=True):
+                st.caption("👤 **CANDIDATE DETAILS (RESUME)**")
+                cand_col1, cand_col2 = st.columns([1, 1])
+                st.metric("Candidate Name", final_state.get("candidate_name", "N/A"))
+                with cand_col1:
                     st.metric(
-                        "Candidate Experience",
-                        f"{final_state.get('candidate_experience', 0)} Years",
+                        "Candidate Exp.",
+                        f"{final_state.get('candidate_experience', 0)} Yrs",
                     )
+                with cand_col2:
                     st.metric(
                         "Skill Match Score",
                         f"{round(final_state.get('skill_match', 0.0) * 100, 1)}%",
                     )
-                with col2:
-                    st.metric(
-                        "Required Experience",
-                        f"{final_state.get('experience_required', 0)} Years",
-                    )
-                    st.metric("Job Title Identified", final_state.get("job_title", "N/A"))
 
-                # Display Deep Agent Feedback if Rejected
-                feedback_output = final_state.get("rejection_feedback")
-                if feedback_output:
-                    st.divider()
-                    st.subheader("💡 Candidate Career Coaching & Skill Gap Analysis")
-                    st.info(feedback_output)
-
-                # Section for GitHub MCP Data Execution
+            # Display Deep Agent Feedback if Rejected
+            feedback_output = final_state.get("rejection_feedback")
+            if feedback_output:
                 st.divider()
-                st.subheader("GitHub MCP Analysis")
-                if github_username:
-                    mcp_res = run_github_mcp(final_state)
-                    mcp_result = mcp_res.get("github_mcp_output")
-                    if mcp_result:
-                        st.markdown(mcp_result)
-                    else:
-                        st.info("No GitHub data available.")
+                st.subheader("💡 Candidate Career Coaching & Skill Gap Analysis")
+                st.info(feedback_output)
+
+            # Section for GitHub MCP Data Execution
+            st.divider()
+            st.subheader("GitHub MCP Analysis")
+            if github_username:
+                mcp_res = run_github_mcp(final_state)
+                mcp_result = mcp_res.get("github_mcp_output")
+                if mcp_result:
+                    st.markdown(mcp_result)
                 else:
-                    st.warning("No GitHub handle found to query MCP server.")
+                    st.info("No GitHub data available.")
+            else:
+                st.warning("No GitHub handle found to query MCP server.")
