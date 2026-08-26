@@ -6,6 +6,8 @@ It features an intelligent multi-input ingestion pipeline—accepting either raw
 
 ---
 
+![total-application-review](AI-Resume-Analyser-With-JD.gif)
+
 ## 🎯 What We Are Trying to Achieve
 
 1. **Flexible Job Ingestion & Web Scraping**:
