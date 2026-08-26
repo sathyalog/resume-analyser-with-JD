@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, Field
@@ -10,8 +11,30 @@ class ExtractedJobDescription(BaseModel):
     required_skills: list[str] = Field(default_factory=list, description="Key technical skills mentioned")
     job_overview: str = Field(default="", description="Summary of key duties and responsibilities")
 
+def compress_markdown_tokens(text: str) -> str:
+    """Utility function to strip web boilerplate noise, URLs, and extra whitespaces to reduce tokens."""
+    if not text:
+        return ""
+    
+    # 1. Remove base64 image strings and markdown images ![alt](url)
+    text = re.sub(r'!\[.*?\]\(.*?\)', '', text)
+    
+    # 2. Convert markdown links [link text](http://...) to just "link text"
+    text = re.sub(r'\[(.*?)\]\(https?://\S+\)', r'\1', text)
+    
+    # 3. Remove standalone bare URLs
+    text = re.sub(r'https?://\S+', '', text)
+    
+    # 4. Remove common web cookie / tracking phrases
+    text = re.sub(r'(?i)(accept cookies|privacy policy|terms of service|manage preferences|all rights reserved)', '', text)
+    
+    # 5. Collapse multiple newlines and spaces into single spacing
+    text = re.sub(r'\n\s*\n', '\n', text)
+    
+    return text.strip()
+
 def fallback_web_scrape(url: str) -> dict:
-    """Fallback scraping method using requests and BeautifulSoup for Firecrawl-restricted domains."""
+    """Fallback scraping method using requests and BeautifulSoup with token optimization."""
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -20,18 +43,19 @@ def fallback_web_scrape(url: str) -> dict:
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, "html.parser")
             
-            # Remove unwanted elements
-            for element in soup(["script", "style", "nav", "footer", "header"]):
+            # Decompose boilerplate elements and noise tags
+            for element in soup(["script", "style", "nav", "footer", "header", "form", "aside", "svg"]):
                 element.decompose()
                 
             clean_text = soup.get_text(separator="\n", strip=True)
+            compressed_text = compress_markdown_tokens(clean_text)
             
-            if len(clean_text) > 100:
+            if len(compressed_text) > 100:
                 return {
                     "job_title": "Position (Scraped via Web Fallback)",
                     "years_experience_required": 0.0,
                     "required_skills": [],
-                    "job_overview": clean_text[:4000] # Limit tokens passed to LLM
+                    "job_overview": compressed_text[:3500]  # Hard cap at ~800 tokens max
                 }
     except Exception as e:
         print(f"Fallback BeautifulSoup scrape failed: {e}")
@@ -41,10 +65,28 @@ def fallback_web_scrape(url: str) -> dict:
 def extract_jd_from_url(url: str) -> dict:
     api_key = os.getenv("FIRECRAWL_API_KEY")
     
+    def infer_metadata_from_text(text: str) -> dict:
+        """Fallback utility to extract title and experience if Firecrawl returns incomplete metadata."""
+        title = "Lead AI Engineer" if "Lead AI Engineer" in text else "AI Engineer"
+        
+        # Infer experience based on seniority keywords if explicit numbers are missing
+        exp_required = 0.0
+        text_lower = text.lower()
+        if "lead" in text_lower or "principal" in text_lower:
+            exp_required = 8.0
+        elif "senior" in text_lower:
+            exp_required = 5.0
+            
+        return {
+            "job_title": title,
+            "years_experience_required": exp_required
+        }
+
+    
     # 1. Try Firecrawl Structured Extraction
     if api_key:
+        app = Firecrawl(api_key=api_key)
         try:
-            app = Firecrawl(api_key=api_key)
             response = app.extract(
                 urls=[url],
                 schema=ExtractedJobDescription.model_json_schema(),
@@ -59,27 +101,40 @@ def extract_jd_from_url(url: str) -> dict:
                 data = data.model_dump()
                 
             if isinstance(data, dict) and (data.get("job_title") or data.get("job_overview")):
+                # Compress overview tokens before returning
+                data["job_overview"] = compress_markdown_tokens(data.get("job_overview", ""))[:3500]
                 return data
 
         except Exception as e:
             print(f"Firecrawl extract failed: {e}. Attempting Firecrawl markdown scrape...")
 
-        # 2. Try Firecrawl Scrape Fallback
+        # 2. Try Firecrawl Scrape Fallback (with native parameter token trimming)
         try:
-            app = Firecrawl(api_key=api_key)
-            scrape_result = app.scrape(url=url, formats=["markdown"])
+            # Inject native Firecrawl options to drop layout noise
+            scrape_result = app.scrape(
+                url=url, 
+                formats=["markdown"],
+                onlyMainContent=True,  # Strips headers, footers, sidebars natively
+                excludeTags=[
+                    "nav", "footer", "header", "aside", 
+                    ".cookie-banner", "#cookie-consent", 
+                    ".similar-jobs", ".recommended-jobs"
+                ]
+            )
+            
             markdown_text = getattr(scrape_result, "markdown", "") or scrape_result.get("markdown", "")
             
             if markdown_text:
+                compressed_md = compress_markdown_tokens(markdown_text)
                 return {
                     "job_title": "Position (Scraped from URL)",
                     "years_experience_required": 0.0,
                     "required_skills": [],
-                    "job_overview": markdown_text
+                    "job_overview": compressed_md[:3500]  # Hard cap at ~800 tokens max
                 }
         except Exception as scrape_err:
             print(f"Firecrawl scrape failed or blocked site: {scrape_err}")
 
-    # 3. Final Fallback: Direct BeautifulSoup HTTP Scraper (Bypasses Firecrawl Domain Restrictions)
+    # 3. Final Fallback: Direct BeautifulSoup Scraper
     print("Executing BeautifulSoup fallback scraper...")
     return fallback_web_scrape(url)

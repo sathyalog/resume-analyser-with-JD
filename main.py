@@ -3,7 +3,8 @@ from typing import Literal, Optional, TypedDict, Dict, Any
 from database import create_index
 from dotenv import load_dotenv
 from helpers import extract_github_handle
-from langchain_openrouter import ChatOpenRouter
+# from langchain_openrouter import ChatOpenRouter
+from langchain_anthropic import ChatAnthropic
 from langgraph.graph import END, START, StateGraph
 from langsmith import traceable
 from mcp_github import run_github_mcp
@@ -45,7 +46,12 @@ st.caption(
     "Upload your resume in sidebar and paste the Job description in the text box below"
 )
 
-llm = ChatOpenRouter(model="gpt-3.5-turbo")
+# llm = ChatOpenRouter(model="gpt-3.5-turbo")
+llm = ChatAnthropic(
+    model="claude-haiku-4-5-20251001",  # Active low-cost Haiku model
+    temperature=0,
+    max_tokens=500
+)
 
 # Input Mode Toggle (URL vs Paste Text)
 input_mode = st.radio(
@@ -103,8 +109,9 @@ class ScreeningModel(BaseModel):
     candidate_experience: float = Field(
         description="Working experience of the candidate as per the resume in years"
     )
-    experience_required: float = Field(
-        description="Working experience required for the job as per the job description in years"
+    experience_required: Optional[float] = Field(
+        default=None, 
+        description="Years of experience required. Set to None if unknown."
     )
     skill_match: float = Field(
         description="Skill match score of the candidate. Value must be between 0 and 1",
@@ -141,7 +148,12 @@ def AnalyseResumeWithJD(state: ScreeningState) -> ScreeningState:
     resume_text = state.get("resume_text", "")
     job_description = state.get("job_description", "")
 
-    prompt = f"""Analyze the provided resume text and job description to extract the candidate name and total years of experience from resume, and extract the job title and required years of experience from the job description. Compare the candidate's skills with the job requirements and compute a skill_match score as a float value between 0.0 and 1.0, where 0.0 indicates no relevant skills match the job description and 1.0 indicates strong alignment with most required skills, prioritizing skill relevance over job title.
+    prompt = f"""
+    You are an expert technical recruiter analyzing a Job Description against a Candidate Resume.
+
+    1. `job_title`: Extract the exact position title (e.g., "Lead AI Engineer"). DO NOT output '<UNKNOWN>'.
+    2. `experience_required`: Extract minimum years of experience as a float. If no explicit number is written, infer it from the title seniority (e.g., Lead = 8.0, Senior = 5.0, Mid = 3.0). DO NOT output words like 'None' or '<UNKNOWN>'.
+    3. `skill_match`: Calculate a float between 0.0 and 1.0 based on technical overlap (e.g., Azure, Python, RAG, Vector DBs).
     
     Resume Text:
     {resume_text}

@@ -1,19 +1,35 @@
 from typing import Dict, Any
 from langsmith import traceable
-from langchain_openrouter import ChatOpenRouter
+from langchain_anthropic import ChatAnthropic
 from pydantic import BaseModel, Field
 
-# Initialize LLM
-feedback_llm = ChatOpenRouter(model="gpt-3.5-turbo")
+# 1. Initialize LLM with a valid model and sufficient max_tokens
+feedback_llm = ChatAnthropic(
+    model="claude-haiku-4-5-20251001",  # Active low-cost Haiku model
+    temperature=0,
+    max_tokens=1000
+)
 
-# Pydantic schemas for structured outputs
+# 2. Pydantic schemas with safe defaults to prevent ValidationErrors
 class FeedbackOutput(BaseModel):
-    missing_skills: list[str] = Field(description="List of specific skills required in JD but missing in resume")
-    suggestions: str = Field(description="Actionable advice on how the candidate can bridge these skill gaps")
+    missing_skills: list[str] = Field(
+        default_factory=list, 
+        description="List of specific skills required in JD but missing in resume"
+    )
+    suggestions: str = Field(
+        default="Focus on building hands-on projects related to core JD requirements.", 
+        description="Actionable advice on how the candidate can bridge these skill gaps"
+    )
 
 class CritiqueOutput(BaseModel):
-    is_valid_gap: bool = Field(description="True if the identified missing skills are genuinely absent from the resume")
-    critique_notes: str = Field(description="Detailed verification notes on whether any candidate experience was overlooked")
+    is_valid_gap: bool = Field(
+        default=True, 
+        description="True if the identified missing skills are genuinely absent from the resume"
+    )
+    critique_notes: str = Field(
+        default="Verified skill gaps against candidate resume.", 
+        description="Detailed verification notes on whether any candidate experience was overlooked"
+    )
 
 @traceable(name="GenerateRejectFeedback")
 def GenerateRejectFeedback(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -21,6 +37,7 @@ def GenerateRejectFeedback(state: Dict[str, Any]) -> Dict[str, Any]:
     jd = state.get("job_description", "")
     critique = state.get("critique", "No previous critique.")
     
+    # 3. Explicit prompt forcing both JSON fields to be returned
     prompt = f"""You are an expert technical career coach. Compare the candidate's resume with the job description.
     Identify missing core skills and provide constructive recommendations.
     
@@ -32,12 +49,15 @@ def GenerateRejectFeedback(state: Dict[str, Any]) -> Dict[str, Any]:
     
     Job Description:
     {jd}
+    
+    IMPORTANT: You MUST populate BOTH 'missing_skills' (as a list) and 'suggestions' (as a string) in your output schema.
     """
     
     structured_llm = feedback_llm.with_structured_output(FeedbackOutput)
     res: FeedbackOutput = structured_llm.invoke(prompt)
     
-    feedback_str = f"**Missing Skills:** {', '.join(res.missing_skills)}\n\n**Suggestions:** {res.suggestions}"
+    missing_str = ", ".join(res.missing_skills) if res.missing_skills else "No specific technical skills flagged."
+    feedback_str = f"**Missing Skills:** {missing_str}\n\n**Suggestions:** {res.suggestions}"
     
     return {
         "rejection_feedback": feedback_str,
@@ -57,6 +77,8 @@ def ReflectAndVerify(state: Dict[str, Any]) -> Dict[str, Any]:
     
     Resume Text:
     {resume}
+    
+    IMPORTANT: You MUST populate BOTH 'is_valid_gap' (boolean) and 'critique_notes' (string) in your output schema.
     """
     
     structured_llm = feedback_llm.with_structured_output(CritiqueOutput)

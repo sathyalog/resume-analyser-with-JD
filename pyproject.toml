@@ -8,6 +8,7 @@ dependencies = [
     "beautifulsoup4>=4.15.0",
     "dotenv>=0.9.9",
     "firecrawl-py>=4.38.0",
+    "langchain-anthropic>=1.6.1",
     "langchain-mcp-adapters>=0.3.2",
     "langchain-openrouter>=0.2.8",
     "langgraph>=1.2.11",
