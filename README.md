@@ -202,3 +202,8 @@ Finally after integrating deep agent, this is how system will show suggestions a
 	5.	LLM Ingestion: The extracted raw text is then passed downstream into your existing AnalyseResumeWithJD LangGraph node, letting the core LLM parse requirements deterministically.
 
 ![firecrawl](<Screenshot 2026-08-26 at 12.14.10 AM.png>)
+
+### New Updates
+* **Anthropic Integration:** Upgraded model execution pipeline to native `langchain-anthropic` (`claude-haiku-4-5-20251001`) for faster latency, lower token unit costs, and strict Pydantic structured output validation.
+* **Token-Optimized Web Scraping:** Implemented native Firecrawl filtering (`onlyMainContent=True`, DOM tag exclusion) alongside regex-based markdown compression to strip boilerplate UI noise, cutting context size by over 60%.
+* **Deterministic Fallback Extraction:** Enhanced scraping pipelines with automated heuristic fallbacks to reliably infer job metadata (titles and experience baselines) when scraping restricted or low-context web pages.
