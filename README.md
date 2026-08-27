@@ -5,8 +5,11 @@ A Streamlit-based LangGraph application designed to automatically analyze a cand
 It features an intelligent multi-input ingestion pipeline—accepting either raw text or direct Job Posting URLs—backed by an AI-driven web scraper with deterministic fallback engines, automated PII scrubbing, live GitHub profile verification, and a multi-turn deep reflection agent for candidate career coaching.
 
 ---
-
-![total-application-review](AI-Resume-Analyser-With-JD.gif)
+Demo:
+Shortlist Scenario:
+![alt text](Shortlist-scenario.gif) 
+Rejection Scenario:
+![alt text](rejection-scenario.gif)
 
 ## 🎯 What We Are Trying to Achieve
 

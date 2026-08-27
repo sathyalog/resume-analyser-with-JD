@@ -1,15 +1,13 @@
 import os
-from typing import Literal, Optional, TypedDict, Dict, Any
-from database import create_index
+from typing import Literal, Optional, TypedDict, Dict, Any, List
+from database import get_pinecone_index
 from dotenv import load_dotenv
 from helpers import extract_github_handle
 
-# from langchain_openrouter import ChatOpenRouter
 from langchain_anthropic import ChatAnthropic
 from langgraph.graph import END, START, StateGraph
 from langsmith import traceable
 from mcp_github import run_github_mcp
-from pinecone import Pinecone
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
 from PII_detection import redact_pii_presidio
@@ -27,13 +25,13 @@ from deepagent_feedback import (
 )
 
 
-# 1. Load Environment Variables
+# 1. Load Environment Variables & Cached Index
 @traceable(name="load_environment_variables")
 def load_environment_variables():
     load_dotenv(override=True)
-    pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-    connect_database = create_index()
-    print(pc.list_indexes())
+    # Retrieves cached Pinecone index (runs create check only ONCE on app startup)
+    index = get_pinecone_index()
+    return index
 
 
 load_environment_variables()
@@ -50,11 +48,10 @@ st.caption(
     "Upload your resume in sidebar and paste the Job description in the text box below"
 )
 
-# llm = ChatOpenRouter(model="gpt-3.5-turbo")
 llm = ChatAnthropic(
-    model="claude-haiku-4-5-20251001",  # Active low-cost Haiku model
+    model="claude-haiku-4-5-20251001",
     temperature=0,
-    max_tokens=500,
+    max_tokens=1000,
 )
 
 # Input Mode Toggle (URL vs Paste Text)
@@ -102,28 +99,30 @@ with st.sidebar:
             st.warning("No GitHub handle found in resume.")
 
 
-# 3. Pydantic Model for Structured Output
+# 3. Enhanced Pydantic Model for Robust Extraction
 class ScreeningModel(BaseModel):
-    company_name: str = Field(
-        description="Name of the hiring company. Infer from email domains, text headers, or context. DO NOT output '<UNKNOWN>'. Use 'Not Specified' if impossible to identify."
-    )
-    candidate_name: str = Field(
-        description="Full name of the candidate extracted from the top of the resume. DO NOT output '<UNKNOWN>'."
-    )
-    job_title: str = Field(
-        description="Job title mentioned in the job description. Infer from context if necessary. DO NOT output '<UNKNOWN>'."
-    )
+    company_name: str = Field(description="Name of the hiring company.")
+    candidate_name: str = Field(description="Full candidate name from top of resume.")
+    job_title: str = Field(description="Job title mentioned in JD.")
     candidate_experience: float = Field(
-        description="Total working experience of the candidate in years based on resume dates."
+        description="Total candidate professional experience in years."
     )
     experience_required: Optional[float] = Field(
-        default=8.0,
-        description="Years of experience required. If unstated, infer from title level (e.g., Lead = 8.0).",
+        default=8.0, description="Required years of experience."
     )
-    skill_match: float = Field(
-        description="Skill match score between candidate and job requirements from 0.0 to 1.0.",
-        ge=0,
-        le=1,
+    skill_match: Optional[float] = Field(
+        default=0.0,
+        description="Skill match score calculated as ratio of matched skills.",
+    )
+    required_skills: list[str] = Field(
+        default_factory=list, description="Key technical skills, frameworks, languages, and platforms required by JD."
+    )
+    candidate_skills: list[str] = Field(
+        default_factory=list, description="Every technical skill, tool, language, platform, or framework mentioned across the entire candidate resume."
+    )
+    matched_skills: list[str] = Field(
+        default_factory=list,
+        description="Intersection of required_skills found in candidate_skills.",
     )
 
 
@@ -135,6 +134,9 @@ class ScreeningState(TypedDict, total=False):
     candidate_experience: Optional[float]
     experience_required: Optional[float]
     skill_match: Optional[float]
+    required_skills: List[str]
+    candidate_skills: List[str]
+    matched_skills: List[str]
     resume_text: Optional[str]
     job_description: Optional[str]
     email: Optional[str]
@@ -144,28 +146,26 @@ class ScreeningState(TypedDict, total=False):
     evaluation_result: Dict[str, Any]
     rejection_feedback: str
     critique: str
-    reflection_count: int  # Loop counter for the deep agent
+    reflection_count: int
 
 
 structured_model = llm.with_structured_output(ScreeningModel)
 
 
-# 5. Node definitions with safe state
+# 5. Node definitions with safe state & normalized skill matching
 @traceable(name="analyse_resume_with_jd")
 def AnalyseResumeWithJD(state: ScreeningState) -> ScreeningState:
     resume_text = state.get("resume_text", "")
     job_description = state.get("job_description", "")
 
     prompt = f"""
-    You are an expert technical recruiter parsing a Resume and a Job Description.
+    You are an expert technical recruiter parsing a Candidate Resume and a Job Description.
 
-    CRITICAL INSTRUCTIONS:
-    1. `candidate_name`: Extract the full name located at the top of the resume text.
-    2. `company_name`: Identify the company hiring for this role. Check headers, job intro, copyright statements, or email/URL mentions. Return "Not Specified" if absent—NEVER output '<UNKNOWN>'.
-    3. `job_title`: Extract the target role title (e.g., "Lead AI Engineer"). NEVER output '<UNKNOWN>'.
-    4. `candidate_experience`: Calculate total professional years from the resume.
-    5. `experience_required`: Extract required minimum experience. Infer based on seniority if unstated (Lead=8, Senior=5, Mid=3).
-    6. `skill_match`: Compute technical skill overlap between 0.0 and 1.0.
+    CRITICAL INSTRUCTION FOR SKILL EXTRACTION:
+    1. Extract `candidate_name`, `company_name`, `job_title`, `candidate_experience`, and `experience_required`.
+    2. `required_skills`: List key technical skills, languages, tools, and platforms required in the Job Description.
+    3. `candidate_skills`: Exhaustively list all technical skills, frameworks, libraries, tools, and platforms mentioned anywhere in the resume (including work history and project descriptions). DO NOT return an empty list if technical terms exist in the resume text.
+    4. Normalize common tech names (e.g., 'React.JS' -> 'React', 'AWS' -> 'Amazon Web Services').
 
     Candidate Resume Text:
     {resume_text}
@@ -175,13 +175,28 @@ def AnalyseResumeWithJD(state: ScreeningState) -> ScreeningState:
     """
     output: ScreeningModel = structured_model.invoke(prompt)
 
+    # Normalized Case-Insensitive Skill Matching Logic
+    req_skills = output.required_skills or []
+    cand_skills = output.candidate_skills or []
+
+    req_set_lower = {s.strip().lower() for s in req_skills if s.strip()}
+    cand_set_lower = {s.strip().lower() for s in cand_skills if s.strip()}
+
+    matched_set_lower = req_set_lower.intersection(cand_set_lower)
+    exact_matched = [s for s in req_skills if s.strip().lower() in matched_set_lower]
+
+    exact_score = len(matched_set_lower) / len(req_set_lower) if len(req_set_lower) > 0 else 0.0
+
     return {
         "company_name": output.company_name,
         "candidate_name": output.candidate_name,
-        "skill_match": output.skill_match,
+        "skill_match": exact_score,
         "candidate_experience": output.candidate_experience,
         "experience_required": output.experience_required,
         "job_title": output.job_title,
+        "required_skills": req_skills,
+        "candidate_skills": cand_skills,
+        "matched_skills": exact_matched,
     }
 
 
@@ -222,17 +237,15 @@ def scrub_resume_pii_node(state: Dict[str, Any]) -> Dict[str, Any]:
     raw_resume_text = state.get("resume_text", "")
 
     if raw_resume_text:
-        # Scrub sensitive data before passing to OpenRouter/LLM nodes
         cleaned_text = redact_pii_presidio(raw_resume_text)
         return {"resume_text": cleaned_text, "pii_scrubbed": True}
 
     return {"pii_scrubbed": False}
 
 
-# 6. Graph Builder with PII detection nodes and Deep agent reflection loop
+# 6. Graph Builder
 builder = StateGraph(ScreeningState)
 
-# Add Nodes
 builder.add_node("scrub_pii", scrub_resume_pii_node)
 builder.add_node("AnalyseResumeWithJD", AnalyseResumeWithJD)
 builder.add_node("ShortList", ShortList)
@@ -248,14 +261,12 @@ builder.add_edge(START, "scrub_pii")
 builder.add_edge("scrub_pii", "AnalyseResumeWithJD")
 builder.add_conditional_edges("AnalyseResumeWithJD", CheckCriteria)
 
-# Shortlist Pathway
 builder.add_edge("ShortList", END)
 
 # Rejection Reflection Pipeline
 builder.add_edge("Reject", "GenerateRejectFeedback")
 builder.add_edge("GenerateRejectFeedback", "ReflectAndVerify")
 
-# Multi-Turn Deep Reflection Routing Loop
 builder.add_conditional_edges(
     "ReflectAndVerify",
     ShouldContinueReflection,
@@ -269,7 +280,7 @@ builder.add_edge("FinalizeFeedback", END)
 
 resume_analyser_graph = builder.compile()
 
-# 7. Action Button & Graph Execution Trigger
+# 7. Action Button & Execution Trigger
 st.divider()
 if st.button("Analyze Candidate", type="primary"):
     if not uploaded_file:
@@ -280,7 +291,6 @@ if st.button("Analyze Candidate", type="primary"):
         st.warning("Please paste a Job Description.")
     else:
         final_jd_text = ""
-        # Parse URL via Firecrawl or use direct text
         if input_mode == "URL Link":
             target_url = st.session_state.get("jd_url").strip()
             with st.spinner("Extracting Job Description from URL..."):
@@ -299,13 +309,12 @@ if st.button("Analyze Candidate", type="primary"):
                     st.success("Successfully fetched Job Description!")
                 else:
                     st.error(
-                        "⚠️ This web domain (e.g., LinkedIn/Glassdoor) blocks automated scraping. Please switch input mode to 'Paste Text' and paste the Job Description manually."
+                        "⚠️ Unable to extract JD automatically. Please switch input mode to 'Paste Text' and paste the Job Description manually."
                     )
                     final_jd_text = job_description_input
         else:
             final_jd_text = job_description_input
 
-        # Execute screening workflow if JD text is ready
         if final_jd_text:
             with st.spinner("Analyzing resume against job description..."):
                 initial_state: ScreeningState = {
@@ -315,11 +324,26 @@ if st.button("Analyze Candidate", type="primary"):
                     "reflection_count": 0,
                 }
 
-                # Run LangGraph pipeline
                 final_state = resume_analyser_graph.invoke(initial_state)
 
-            # Display Structured Metrics Breakdown
             st.subheader("Analysis Breakdown")
+
+            def render_skill_badges(skills_list, matched_set):
+                badges = []
+                for skill in skills_list:
+                    if skill.lower() in matched_set:
+                        badges.append(
+                            f'<span style="background-color: #2e7d32; color: white; padding: 3px 8px; border-radius: 12px; font-weight: bold; margin-right: 5px; display: inline-block; margin-bottom: 5px;">✓ {skill}</span>'
+                        )
+                    else:
+                        badges.append(
+                            f'<span style="background-color: #424242; color: white; padding: 3px 8px; border-radius: 12px; margin-right: 5px; display: inline-block; margin-bottom: 5px;">{skill}</span>'
+                        )
+                return " ".join(badges)
+
+            matched_skills_set = {
+                s.lower() for s in final_state.get("matched_skills", [])
+            }
 
             # Section 1: Company Details Container
             with st.container(border=True):
@@ -330,13 +354,23 @@ if st.button("Analyze Candidate", type="primary"):
                 with c_col2:
                     st.metric("Role Title", final_state.get("job_title", "N/A"))
                 st.metric(
-                    "Required Exp.",
-                    f"{final_state.get('experience_required', 0)} Yrs",
+                    "Required Exp.", f"{final_state.get('experience_required', 0)} Yrs"
                 )
+
+                st.markdown("**Required Skills:**")
+                req_skills = final_state.get("required_skills", [])
+                if req_skills:
+                    st.markdown(
+                        render_skill_badges(req_skills, matched_skills_set),
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.write("None specified")
+
             # Section 2: Candidate Details Container
             with st.container(border=True):
                 st.caption("👤 **CANDIDATE DETAILS (RESUME)**")
-                cand_col1, cand_col2 = st.columns([1, 1])
+                cand_col1, cand_col2 = st.columns(2)
                 st.metric("Candidate Name", final_state.get("candidate_name", "N/A"))
                 with cand_col1:
                     st.metric(
@@ -344,19 +378,25 @@ if st.button("Analyze Candidate", type="primary"):
                         f"{final_state.get('candidate_experience', 0)} Yrs",
                     )
                 with cand_col2:
-                    st.metric(
-                        "Skill Match Score",
-                        f"{round(final_state.get('skill_match', 0.0) * 100, 1)}%",
-                    )
+                    exact_pct = final_state.get("skill_match", 0.0) * 100
+                    st.metric("Skill Match Score", f"{exact_pct:.2f}%")
 
-            # Display Deep Agent Feedback if Rejected
+                st.markdown("**Candidate Resume Skills:**")
+                cand_skills = final_state.get("candidate_skills", [])
+                if cand_skills:
+                    st.markdown(
+                        render_skill_badges(cand_skills, matched_skills_set),
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.write("None extracted")
+
             feedback_output = final_state.get("rejection_feedback")
             if feedback_output:
                 st.divider()
                 st.subheader("💡 Candidate Career Coaching & Skill Gap Analysis")
                 st.info(feedback_output)
 
-            # Section for GitHub MCP Data Execution
             st.divider()
             st.subheader("GitHub MCP Analysis")
             if github_username:

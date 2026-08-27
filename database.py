@@ -1,15 +1,17 @@
-from pinecone import Pinecone, ServerlessSpec
 import os
+import streamlit as st
 from dotenv import load_dotenv
-from pinecone import PodSpec
+from pinecone import Pinecone, ServerlessSpec
 
 load_dotenv(override=True)
 
-pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-
 index_name = "resume-analyser"
 
-def create_index():
+@st.cache_resource
+def get_pinecone_index():
+    """Initializes Pinecone once and caches the index object across Streamlit rerenders."""
+    pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+
     if not pc.has_index(index_name):
         print(f"Creating index {index_name}..")
         pc.create_index(
@@ -21,3 +23,6 @@ def create_index():
         print(f"Index {index_name} is created :)")
     else:
         print(f"Index {index_name} already exists")
+
+    # Return the connected index object directly
+    return pc.Index(index_name)
