@@ -1,0 +1,136 @@
+[
+    {
+        "category": "Agentic AI & Orchestration",
+        "skills": [
+            "LangGraph",
+            "CrewAI",
+            "Model Context Protocol (MCP)",
+            "FastMCP",
+            "Multi-Agent Systems",
+            "Deterministic State Machines",
+            "ReAct Pattern",
+            "Deep Agents",
+            "Human-In-The-Loop (HITL)",
+            "Checkpoint Recovery (PostgresSaver)",
+            "Conditional Workflows",
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "LangSmith"
+        ]
+    },
+    {
+        "category": "Vector Search & Advanced RAG",
+        "skills": [
+            "Retrieval-Augmented Generation (RAG)",
+            "Single-Index Metadata-Filtered RAG",
+            "Multi-Entity Isolated Retrieval",
+            "Chroma DB (HNSW Isolation)",
+            "Pinecone",
+            "FAISS (IndexFlatL2, IndexIVFFlat, IndexHNSWFlat)",
+            "Semantic Vector Caching",
+            "Local Embeddings (HuggingFace, Sentence-Transformers)",
+            "Docling PDF Parsing",
+            "Anthropic Claude 3",
+            "OpenRouter API"
+        ]
+    },
+    {
+        "category": "LLMOps, Governance & Guardrails",
+        "skills": [
+            "LangSmith Studio",
+            "LLM-as-a-Judge",
+            "OpenEvals",
+            "Trajectory Tracking",
+            "Golden QA Datasets",
+            "Azure AI Content Safety",
+            "PII Masking & Redaction Middleware",
+            "Pydantic Structured Outputs",
+            "Grounding Contracts",
+            "Prompt Engineering"
+        ]
+    },
+    {
+        "category": "AI-Assisted Development & Coding Agents",
+        "skills": [
+            "Claude Code (CLI/VS Code)",
+            "OpenCode Agent",
+            "Autonomous Refactoring",
+            "Prompt-Driven Development"
+        ]
+    },
+    {
+        "category": "Frontend",
+        "skills": [
+            "ReactJS",
+            "TypeScript",
+            "JavaScript",
+            "ES6+",
+            "Redux",
+            "Redux Toolkit",
+            "HTML5",
+            "CSS3",
+            "SCSS",
+            "Responsive Web Design",
+            "Nunjucks"
+        ]
+    },
+    {
+        "category": "Backend, Mobile & Systems Engineering",
+        "skills": [
+            "Python 3.x",
+            "TypeScript",
+            "Node.js",
+            "Swift (iOS/SwiftUI)",
+            "FastAPI",
+            "REST APIs",
+            "PostgreSQL",
+            "SQLite3",
+            "Redis",
+            "Streamlit",
+            "Gradio",
+            "Docker",
+            "Kubernetes",
+            "Microsoft Azure",
+            "Azure APIM",
+            "HAPI",
+            ".NET",
+            "C#",
+            "JWT",
+            "Security",
+            "XSS"
+        ]
+    },
+    {
+        "category": "Data and Architecture",
+        "skills": [
+            "Cosmos DB",
+            "SQL",
+            "Micro Frontends",
+            "Monorepo",
+            "System Design",
+            "HLD",
+            "Design Systems"
+        ]
+    },
+    {
+        "category": "Cloud and DevOps",
+        "skills": [
+            "Microsoft Azure",
+            "Application Insights",
+            "App Services",
+            "Function Apps",
+            "Storage Accounts",
+            "API Management",
+            "Key Vault",
+            "Service Bus",
+            "Azure Redis",
+            "Azure SQL",
+            "AWS Cloud Practitioner",
+            "Git",
+            "CI/CD",
+            "Webpack",
+            "Microsoft Foundry",
+            "Docker"
+        ]
+    }
+]

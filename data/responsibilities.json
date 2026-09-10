@@ -1,0 +1,28 @@
+[
+    {
+        "context_title": "Tech Lead at Cognizant Technology Solutions London",
+        "responsibilities": [
+            "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimisation, reusable component design, and platform enhancements across public sector workflows",
+            "Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimising Azure autoscaling configurations",
+            "Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes by enabling reusable sections and eliminating redundant user journey creation",
+            "Upgraded Node.js from version 14 to 18, resolving pipeline issues and ensuring application stability through comprehensive testing",
+            "Migrated Digital Forms platform from Cosmos DB to SQL, improving data structure, query performance, and cost efficiency",
+            "Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions while preserving secure Azure secret integration",
+            "Developed and maintained scalable backend APIs and server routes using Node.js, including database integration, exception logging, and server configuration",
+            "Leveraged Microsoft Azure services including App Services, API Management, Cosmos DB, Storage Accounts, and Application Insights to build, monitor, and optimise cloud-native applications",
+            "Collaborated cross-functionally with business stakeholders, architects, DevOps, WAF, data teams, and Business Analysts to translate complex requirements into scalable, secure technical solutions",
+            "Produced high-quality technical documentation including HLD diagrams, Confluence documentation, release notes, data models, and Git branching strategies to support governance and delivery",
+            "Contributed to CI/CD pipeline design and release management, including automated deployments, unit testing, code reviews, and environment-specific performance optimisation",
+            "Partnered with account architects to implement infrastructure improvements that enhanced system reliability, scalability, and operational efficiency",
+            "Communicated complex technical concepts effectively to both technical and non-technical stakeholders, influencing senior management decisions and aligning solutions with business objectives"
+        ]
+    },
+    {
+        "context_title": "Senior Associate at Publicis Sapient London",
+        "responsibilities": [
+            "Architected scalable web applications and state management frameworks using React, TypeScript, and Webpack in a MonoRepo environment",
+            "Optimized bundle size, code-splitting, and UI execution, improving cross-functional project delivery efficiency by 30%",
+            "Led cross-functional Agile teams, managing code releases, environment synchronizations, and offshore delivery pipelines"
+        ]
+    }
+]

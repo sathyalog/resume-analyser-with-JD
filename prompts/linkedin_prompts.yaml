@@ -1,0 +1,12 @@
+linkedin_summary_prompt: |
+  Transform the candidate's JSON context into a high-converting LinkedIn profile summary.
+
+  Return a JSON object matching this exact format:
+  {{
+    "headline": "AI Engineering Lead | LangGraph & Multi-Agent Systems Architect",
+    "about_section": "💼 𝗟𝗲𝗮𝗱 𝗔𝗜 𝗘𝗻𝗴𝗶𝗻𝗲𝗲𝗿\nI am a Technical Lead with {years_exp}+ years of experience...",
+    "featured_hashtags": ["AIEngineering", "LangGraph", "Azure", "AgenticAI"]
+  }}
+
+  Candidate Context JSON:
+  {context_json}

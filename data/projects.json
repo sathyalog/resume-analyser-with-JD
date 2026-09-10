@@ -1,0 +1,982 @@
+[
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit for deterministic candidate routing (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback for job posting ingestion. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop for skill gap verification and auto-generated feedback. Configured end-to-end tracing with LangSmith for monitoring node latency, token usage, and execution trajectories."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace",
+            "NumPy",
+            "LRU cache"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure",
+            "Docker",
+            "Kubernetes",
+            "Cosmos DB",
+            "SQL",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% through Redis caching, PM2 multi-process execution, and Azure autoscaling optimization. Designed and delivered Repeatable Questions module reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL improving data structure and query performance. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit for deterministic candidate routing (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback for job posting ingestion. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop for skill gap verification and auto-generated feedback. Configured end-to-end tracing with LangSmith for monitoring node latency, token usage, and execution trajectories."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace",
+            "NumPy",
+            "LRU cache"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure",
+            "Docker",
+            "Kubernetes",
+            "Cosmos DB",
+            "SQL",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% through Redis caching, PM2 multi-process execution, and Azure autoscaling optimization. Designed and delivered Repeatable Questions module reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL improving data structure and query performance. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit for deterministic candidate routing (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback for job posting ingestion. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop for skill gap verification and auto-generated feedback. Configured end-to-end tracing with LangSmith for monitoring node latency, token usage, and execution trajectories."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace",
+            "NumPy",
+            "LRU cache"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure",
+            "Docker",
+            "Kubernetes",
+            "Cosmos DB",
+            "SQL",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% through Redis caching, PM2 multi-process execution, and Azure autoscaling optimization. Designed and delivered Repeatable Questions module reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL improving data structure and query performance. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace embeddings",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5 ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback for job posting ingestion. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop for skill gap verification and auto-generated candidate feedback. Configured end-to-end tracing with LangSmith for monitoring node latency, token usage, and execution trajectories."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace Embeddings",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation and strict grounding boundaries. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5 ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety, deploying custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry for trace debugging."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL, improving data structure, query performance, and cost efficiency. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace embeddings",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5 ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5 ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace embeddings",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5 ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace embeddings",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit with OpenRouter and Pydantic to deterministically route candidates (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead, enabling zero-overhead scaling across 200+ target documents with complete data isolation. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure App Services",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% by implementing Redis caching, enabling PM2 multi-process execution, and optimizing Azure autoscaling configurations. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    },
+    {
+        "project_name": "Autonomous GitHub Auditor & Multi-Agent MCP Pipeline",
+        "tech_stack": [
+            "LangGraph",
+            "CrewAI",
+            "FastMCP",
+            "GitHub REST API",
+            "SSE protocols"
+        ],
+        "description": "Developed an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP for real-time developer activity auditing over local SSE protocols. Isolated data ingestion by building a standalone FastMCP server that exposes GitHub REST endpoints as standardized, discoverable MCP tools. Enforced modular software boundaries by packaging CrewAI agents into an editable local dependency."
+    },
+    {
+        "project_name": "LangGraph & MCP Automated Candidate Screening Engine",
+        "tech_stack": [
+            "LangGraph",
+            "Streamlit",
+            "OpenRouter",
+            "Pydantic",
+            "Firecrawl API",
+            "BeautifulSoup",
+            "GitHub MCP",
+            "Microsoft Presidio",
+            "LangSmith"
+        ],
+        "description": "Built a stateful agentic pipeline using LangGraph & Streamlit for deterministic candidate routing (ShortList vs Reject) based on experience and skill match scores. Implemented dual-stage web scraper using Firecrawl API with BeautifulSoup fallback. Integrated GitHub MCP server for live commit activity verification. Embedded Microsoft Presidio for PII scrubbing with multi-turn Deep Reflection Loop for skill gap verification. Configured end-to-end tracing with LangSmith for monitoring node latency and token usage."
+    },
+    {
+        "project_name": "Enterprise Multi-Country Single-Index Metadata-Filtered RAG",
+        "tech_stack": [
+            "Chroma DB",
+            "Anthropic Claude 3",
+            "Pydantic",
+            "HNSW",
+            "HuggingFace embeddings",
+            "NumPy"
+        ],
+        "description": "Architected a scalable single-index RAG system using Chroma DB and Anthropic Claude 3, routing entity queries via Pydantic metadata filtering over HNSW vector graphs. Eliminated multi-database connection overhead for zero-overhead scaling across 200+ target documents. Implemented custom in-memory vector semantic cache using HuggingFace embeddings and NumPy cosine similarity (>0.90 threshold) with LRU eviction, reducing LLM API costs and cutting repeat query latency to under 5ms."
+    },
+    {
+        "project_name": "Enterprise Support Agent & Safety Guardrails (Microsoft AI Foundry)",
+        "tech_stack": [
+            "Microsoft AI Foundry",
+            "Azure AI Agent Service",
+            "File Search RAG",
+            "Azure AI Content Safety",
+            "Azure Application Insights",
+            "OpenTelemetry"
+        ],
+        "description": "Built a customer support agent using Microsoft AI Foundry SDK and Azure AI Agent Service backed by File Search RAG capabilities. Enforced strict system prompt execution contracts to prevent hallucinations through explicit tool-gating conditions and mandatory PDF citation requirements. Configured enterprise safety controls via Azure AI Content Safety with custom guardrails for prompt injection blocking, PII output redaction, and task-drift prevention. Integrated execution path tracking using Azure Application Insights and OpenTelemetry."
+    },
+    {
+        "project_name": "Multi-Tool Stateful Agent & Thread Persistence (LangGraph & Postgres)",
+        "tech_stack": [
+            "LangGraph",
+            "PostgreSQL",
+            "PostgresSaver",
+            "OpenRouter",
+            "GPT-4o-mini",
+            "OpenWeatherMap API",
+            "Wikipedia API",
+            "Tavily Search API",
+            "LangSmith Studio"
+        ],
+        "description": "Developed multi-turn conversational agents featuring stateful checkpointing powered by PostgresSaver to persist conversation history across session restarts. Implemented dynamic tool-routing workflows using LangGraph and OpenRouter (GPT-4o-mini), integrating OpenWeatherMap, Wikipedia, and Tavily Search APIs. Evaluated agent trajectory tracing, execution latency, and token performance using LangSmith Studio."
+    },
+    {
+        "project_name": "Digital Forms Platform",
+        "tech_stack": [
+            "Node.js",
+            "React",
+            "Redis",
+            "PM2",
+            "Azure",
+            "Cosmos DB",
+            "SQL",
+            "Docker",
+            "Kubernetes",
+            "Azure DevOps",
+            "GitHub Actions"
+        ],
+        "description": "Led end-to-end delivery of Digital Forms platform, owning system architecture, performance optimization, reusable component design, and platform enhancements across public sector workflows. Improved application performance and scalability by up to 60% through Redis caching, PM2 multi-process execution, and Azure autoscaling optimization. Designed and delivered the Repeatable Questions module, reducing form development time from months to minutes. Upgraded Node.js from version 14 to 18. Migrated platform from Cosmos DB to SQL. Containerized legacy Azure App Services using Docker and Kubernetes, migrating pipelines from Azure DevOps to GitHub Actions."
+    }
+]

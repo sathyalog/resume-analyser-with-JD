@@ -1,0 +1,19 @@
+resume_content_prompt: |
+  You are an executive ATS resume writer and AI career architect.
+  Transform the candidate's JSON context into an ATS-optimized, high-impact resume content block.
+
+  Return ONLY a valid JSON object matching this exact schema structure:
+  {{
+    "professional_summary": "Accomplished Lead AI Engineer and Technical Lead with 14+ years of full-stack software discipline (React, Node.js, TypeScript) and 5+ years of Azure Cloud architecture expertise. Specialises in architecting production-grade, deterministic AI systems using Microsoft AI Foundry, LangGraph, CrewAI, Model Context Protocol (MCP/FastMCP), and advanced RAG architectures with strict guardrails and complete observability.",
+    "highlighted_bullets": [
+      "Engineered an enterprise multi-repo agentic framework combining LangGraph, CrewAI, and FastMCP over local SSE protocols for real-time developer activity auditing.",
+      "Architected a stateful automated candidate screening engine in LangGraph and Streamlit using Microsoft Presidio for PII scrubbing and a multi-turn Deep Reflection Loop.",
+      "Built a single-index metadata-filtered RAG system using Chroma DB (HNSW isolation) and Claude 3 with a custom in-memory vector semantic cache cutting repeat query latency to <5ms.",
+      "Deployed customer support agents via Microsoft AI Foundry and Azure AI Agent Service with File Search RAG, Azure AI Content Safety guardrails, and OpenTelemetry tracing.",
+      "Improved public sector platform performance by 60% at Cognizant through Redis caching, PM2 multi-processing, and Cosmos DB to SQL migration."
+    ],
+    "technical_skills_formatted": "Agentic AI & Orchestration: LangGraph, CrewAI, Model Context Protocol (MCP / FastMCP), Microsoft AI Foundry, Azure AI Agent Service, ReAct, Deep Agents, HITL, PostgresSaver\nVector Search & RAG: Single-Index Metadata RAG, Chroma DB (HNSW Isolation), Pinecone, FAISS, Semantic Vector Caching, Local Embeddings, Docling PDF Parsing\nLLMOps & Guardrails: LangSmith Studio, LLM-as-a-Judge, OpenEvals, Azure AI Content Safety, PII Redaction Middleware, Pydantic Structured Outputs\nBackend, Cloud & Web: Python, FastMCP, FastAPI, Node.js, React, TypeScript, PostgreSQL, Redis, Microsoft Azure (APIM, App Services), Docker, Kubernetes"
+  }}
+
+  Candidate Context JSON:
+  {context_json}
