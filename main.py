@@ -22,7 +22,8 @@ from firecrawl_scraping import extract_jd_from_url
 
 # Import Centralized Storage Functions & Clean Schemas
 from core.storage import load_json_data, save_json_data
-
+from mcp_codebase import scan_local_projects
+from core.schemas import JDCodeProofList
 # from core.storage import load_json_data, save_json_data, JSON_FILES
 from core.schemas import (
     SkillEntry,
@@ -73,6 +74,10 @@ github_username = None
 
 if "parsed_candidate_roles" not in st.session_state or not st.session_state.parsed_candidate_roles:
     st.session_state.parsed_candidate_roles = ["Lead AI Engineer", "Software Engineer", "General Professional Experience"]
+if "analysis_completed" not in st.session_state:
+    st.session_state.analysis_completed = False
+if "jd_code_proofs" not in st.session_state:
+    st.session_state.jd_code_proofs = []
 
 with st.sidebar:
     st.title("Candidate Workspace")
@@ -126,6 +131,7 @@ with tab_analyser:
             "Job Description Text", key="job_description", height=200
         )
 
+    # Screening State & Graph Setup
     class ScreeningState(TypedDict, total=False):
         company_name: Optional[str]
         candidate_name: Optional[str]
@@ -227,7 +233,36 @@ with tab_analyser:
     builder.add_edge("FinalizeFeedback", END)
     resume_analyser_graph = builder.compile()
 
+    # Helper function to extract code proof using local projects reader
+    def extract_jd_code_proofs(required_skills: list) -> list:
+        proof_results = []
+        for skill in required_skills[:4]:
+            raw_matches = scan_local_projects(skill)
+            if "No code or README matches found" not in raw_matches and "not found" not in raw_matches:
+                prompt = f"""
+                Analyze these code matches found in local projects for the JD requirement '{skill}'.
+                
+                Matches Found:
+                {raw_matches}
+                
+                Format into structured interview proof:
+                1. Name of the requirement.
+                2. Project name.
+                3. Relative file path.
+                4. Code snippet showing implementation.
+                5. Exactly 2-3 lines of interview talking points.
+                """
+                try:
+                    proof_llm = llm.with_structured_output(JDCodeProofList)
+                    res = proof_llm.invoke(prompt)
+                    proof_results.extend(res.proofs)
+                except Exception:
+                    pass
+        return proof_results
+
     st.divider()
+
+    # Trigger Candidate Analysis
     if st.button("Analyze Candidate", type="primary"):
         if not uploaded_file:
             st.warning("Please upload a resume in PDF format.")
@@ -251,7 +286,7 @@ with tab_analyser:
                 final_jd_text = job_description_input
 
             if final_jd_text:
-                with st.spinner("Analyzing candidate against job description..."):
+                with st.spinner("1/2 Running LangGraph Resume & JD Evaluation..."):
                     initial_state: ScreeningState = {
                         "resume_text": extracted_resume_text,
                         "job_description": final_jd_text,
@@ -259,33 +294,81 @@ with tab_analyser:
                         "reflection_count": 0,
                     }
                     final_state = resume_analyser_graph.invoke(initial_state)
+                    st.session_state.final_analysis_state = final_state
 
-                matched_skills_set = {s.lower() for s in final_state.get("matched_skills", [])}
-                def render_badges(skills):
-                    return " ".join([f'<span style="background-color: {"#2e7d32" if s.lower() in matched_skills_set else "#424242"}; color: white; padding: 3px 8px; border-radius: 12px; margin-right: 5px;">{s}</span>' for s in skills])
+                with st.spinner("2/2 Scanning local 15 project codebases for matching implementation code..."):
+                    st.session_state.jd_code_proofs = extract_jd_code_proofs(final_state.get("required_skills", []))
 
-                with st.container(border=True):
-                    st.caption("🏢 **COMPANY DETAILS (JOB POSTING)**")
-                    c1, c2 = st.columns(2)
-                    c1.metric("Company Name", final_state.get("company_name", "N/A"))
-                    c2.metric("Role Title", final_state.get("job_title", "N/A"))
-                    st.markdown("**Required Skills:** " + render_badges(final_state.get("required_skills", [])), unsafe_allow_html=True)
+                # Mark analysis as complete to enable the 2nd subtab
+                st.session_state.analysis_completed = True
+                st.rerun()
 
-                with st.container(border=True):
-                    st.caption("👤 **CANDIDATE DETAILS (RESUME)**")
-                    cand1, cand2 = st.columns(2)
-                    cand1.metric("Candidate Experience", f"{final_state.get('candidate_experience', 0)} Yrs")
-                    cand2.metric("Skill Match Score", f"{(final_state.get('skill_match', 0.0) * 100):.2f}%")
-                    st.markdown("**Resume Skills:** " + render_badges(final_state.get("candidate_skills", [])), unsafe_allow_html=True)
+    # ==========================================================================
+    # CREATING INNER SUBTABS FOR TAB 1
+    # ==========================================================================
+    subtab_results, subtab_code_proofs = st.tabs([
+        "📊 Candidate Match Results", 
+        "🔒 Local Codebase Proof & Notes" if not st.session_state.analysis_completed else "🎯 Local Codebase Proof & Notes"
+    ])
 
-                if final_state.get("rejection_feedback"):
-                    st.info(final_state.get("rejection_feedback"))
+    # --------------------------------------------------------------------------
+    # SUBTAB 1: ANALYSIS RESULTS
+    # --------------------------------------------------------------------------
+    with subtab_results:
+        if st.session_state.analysis_completed and "final_analysis_state" in st.session_state:
+            final_state = st.session_state.final_analysis_state
+            matched_skills_set = {s.lower() for s in final_state.get("matched_skills", [])}
+            
+            def render_badges(skills):
+                return " ".join([f'<span style="background-color: {"#2e7d32" if s.lower() in matched_skills_set else "#424242"}; color: white; padding: 3px 8px; border-radius: 12px; margin-right: 5px;">{s}</span>' for s in skills])
 
-                st.divider()
-                st.subheader("GitHub MCP Analysis")
-                if github_username:
-                    mcp_res = run_github_mcp(final_state)
-                    st.markdown(mcp_res.get("github_mcp_output", "No GitHub data available."))
+            with st.container(border=True):
+                st.caption("🏢 **COMPANY DETAILS (JOB POSTING)**")
+                c1, c2 = st.columns(2)
+                c1.metric("Company Name", final_state.get("company_name", "N/A"))
+                c2.metric("Role Title", final_state.get("job_title", "N/A"))
+                st.markdown("**Required Skills:** " + render_badges(final_state.get("required_skills", [])), unsafe_allow_html=True)
+
+            with st.container(border=True):
+                st.caption("👤 **CANDIDATE DETAILS (RESUME)**")
+                cand1, cand2 = st.columns(2)
+                cand1.metric("Candidate Experience", f"{final_state.get('candidate_experience', 0)} Yrs")
+                cand2.metric("Skill Match Score", f"{(final_state.get('skill_match', 0.0) * 100):.2f}%")
+                st.markdown("**Resume Skills:** " + render_badges(final_state.get("candidate_skills", [])), unsafe_allow_html=True)
+
+            if final_state.get("rejection_feedback"):
+                st.info(final_state.get("rejection_feedback"))
+
+            st.divider()
+            st.subheader("GitHub MCP Analysis")
+            if github_username:
+                mcp_res = run_github_mcp(final_state)
+                st.markdown(mcp_res.get("github_mcp_output", "No GitHub data available."))
+        else:
+            st.info("👆 Upload a resume and click 'Analyze Candidate' above to view match results.")
+
+    # --------------------------------------------------------------------------
+    # SUBTAB 2: GATED LOCAL CODEBASE PROOF
+    # --------------------------------------------------------------------------
+    with subtab_code_proofs:
+        if not st.session_state.analysis_completed:
+            st.warning("🔒 **Section Locked:** Please click **'Analyze Candidate'** above to run JD parsing and unlock implementation proofs from your 15 local projects.")
+        else:
+            st.subheader("🎯 Local Codebase Proof & Interview Notes")
+            st.caption("Automated code search across your local repositories matching skills requested in this JD:")
+
+            proofs = st.session_state.get("jd_code_proofs", [])
+            if proofs:
+                st.success(f"Found code implementation evidence for {len(proofs)} JD requirements!")
+                for item in proofs:
+                    with st.expander(f"🔑 **{item.requirement}** — Implemented in `{item.project_name}`", expanded=True):
+                        st.markdown(f"**Location:** `{item.file_path}`")
+                        st.markdown("**Interview Talking Points (2-3 lines):**")
+                        st.info(item.interview_talking_points)
+                        st.markdown("**Implementation Snippet:**")
+                        st.code(item.code_snippet, language="python")
+            else:
+                st.info("No direct matching code snippets found in local projects for these specific JD requirements.")
 
 # ==============================================================================
 # TAB 2: SKILL HUB & CONTENT GENERATOR STUDIO

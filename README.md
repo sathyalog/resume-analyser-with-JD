@@ -15,14 +15,15 @@ Rejection Scenario:
 ![screen2](<Screenshot 2026-09-10 at 4.00.13 PM.png>) 
 ![screen3](<Screenshot 2026-09-10 at 4.00.33 PM.png>) 
 ![screen4](<Screenshot 2026-09-10 at 4.00.49 PM.png>)
+![screen5](<Screenshot 2026-09-10 at 4.53.45 PM.png>)
 ---
 
 ## 🌟 How This Platform Helps Candidates
 
 Navigating technical job markets requires candidates to demonstrate clear, verifiable technical depth while tailoring their experience across multiple channels. This platform serves as a centralized **Career & Skill Hub** that helps candidates:
 
-1. **Verify Proof-of-Work via Real-Time GitHub MCP**:
-   * Instead of relying solely on self-reported resume claims, the system integrates a custom **Model Context Protocol (MCP)** server to fetch live commit histories, repository metrics, and active contributions directly from GitHub.
+1. **Verify Proof-of-Work via Real-Time GitHub MCP & Local Codebase Scanning**:
+   * Instead of relying solely on self-reported resume claims, the system integrates a custom **Model Context Protocol (MCP)** server for live GitHub verification alongside a **Local Codebase Scanner** that extracts concrete implementation proofs directly from your local project files.
 2. **Automate Job Description Matching & Alignment**:
    * Evaluates candidate resumes against real-world Job Descriptions (parsed via **Firecrawl** or direct text).
    * Generates deep reflection feedback using multi-turn LLM agent loops to highlight skill gaps and optimization areas.
@@ -30,16 +31,18 @@ Navigating technical job markets requires candidates to demonstrate clear, verif
    * Automatically scrubs sensitive personally identifiable information (PII) using **Microsoft Presidio** before sending context to LLMs, keeping candidate data secure.
 4. **Generate High-Converting Multi-Channel Profiles**:
    * Uses a central structured JSON store (`skills.json`, `projects.json`, `responsibilities.json`, `challenges.json`) to dynamically format ATS-optimized resumes, story-driven LinkedIn About sections, and modern GitHub profile READMEs.
-5. **Accelerate Interview Preparation**:
-   * Provides a 2-minute elevator pitch builder ("Tell Me About Yourself"), STAR-formatted technical challenge breakdowns, and architectural cheatsheets tailored to the candidate's core stack.
+5. **Accelerate Interview Preparation with Code-Level Notes**:
+   * Generates 2-3 sentence interview talking points linked directly to matching code snippets from your local repositories, alongside a 2-minute elevator pitch builder, STAR-formatted technical challenge breakdowns, and architectural cheatsheets.
 
 ---
+
 ## 🛠️ Key Technical Architecture & Features
 
-### 1. 📄 Resume Analyser with JD Matching
+### 1. 📄 Resume Analyser with JD Matching & Local Codebase Proof
 * **Dual-Stage Job Description Ingestion**: Supports direct URL scraping powered by **Firecrawl API** with BeautifulSoup fallback and plain text parsing.
 * **LangGraph State Machine**: Orchestrates PII scrubbing, extraction, qualification checks (Experience + Skill Match score), and conditional routing (`ShortList` vs `Reject`).
 * **Deep Agent Reflection Loop**: Runs iterative verification on rejected applications to deliver actionable candidate feedback.
+* **Gated Local Codebase Reader (`mcp_codebase.py`)**: Automatically unlocks post-analysis inside Tab 1, scanning up to 15 local repository directories for required JD skills and generating code-grounded interview talking points.
 * **Observability & Tracing**: Fully instrumented with **LangSmith** (`@traceable`) to track node execution trajectories, token usage, and latency metrics.
 
 ### 2. ✍️ Skill Hub & Content Generator Studio
@@ -53,6 +56,7 @@ Navigating technical job markets requires candidates to demonstrate clear, verif
 * **Day-to-Day Responsibilities Quick-Glance**: Instant reference matrix organized by role context.
 * **STAR Challenge Storyteller**: Structures raw engineering incidents into clear *Situation, Task, Action, and Result* narratives.
 * **Architecture Cheatsheet**: Generates system design trade-off guides based on candidate-specific tools (e.g., LangGraph PostgresSaver, Chroma DB HNSW metadata isolation, Redis caching).
+
 ---
 
 ## Folder structure

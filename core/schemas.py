@@ -70,3 +70,13 @@ class LinkedInStudioOutput(BaseModel):
 
 class GitHubReadmeOutput(BaseModel):
     markdown_readme: str = Field(default="", description="Complete valid Markdown content for GitHub profile README")
+
+class JDCodeProof(BaseModel):
+    requirement: str = Field(description="The technical skill or requirement from the JD")
+    project_name: str = Field(description="Name of local project where implemented")
+    file_path: str = Field(description="Path to file or README reference")
+    code_snippet: str = Field(description="Relevant code snippet extracted")
+    interview_talking_points: str = Field(description="2-3 bullet points for interview prep explaining implementation")
+
+class JDCodeProofList(BaseModel):
+    proofs: List[JDCodeProof] = Field(default_factory=list)
