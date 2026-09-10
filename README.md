@@ -22,32 +22,32 @@ Rejection Scenario:
 Navigating technical job markets requires candidates to demonstrate clear, verifiable technical depth while tailoring their experience across multiple channels. This platform serves as a centralized **Career & Skill Hub** that helps candidates:
 
 1. **Verify Proof-of-Work via Real-Time GitHub MCP**:
-   * Instead of relying solely on self-reported resume claims, the system integrates a custom **Model Context Protocol (MCP)** server to fetch live commit histories, repository metrics, and active contributions directly from GitHub[span_0](start_span)[span_0](end_span).
+   * Instead of relying solely on self-reported resume claims, the system integrates a custom **Model Context Protocol (MCP)** server to fetch live commit histories, repository metrics, and active contributions directly from GitHub.
 2. **Automate Job Description Matching & Alignment**:
-   * Evaluates candidate resumes against real-world Job Descriptions (parsed via **Firecrawl** or direct text)[span_1](start_span)[span_1](end_span).
-   * Generates deep reflection feedback using multi-turn LLM agent loops to highlight skill gaps and optimization areas[span_2](start_span)[span_2](end_span).
+   * Evaluates candidate resumes against real-world Job Descriptions (parsed via **Firecrawl** or direct text).
+   * Generates deep reflection feedback using multi-turn LLM agent loops to highlight skill gaps and optimization areas.
 3. **Prevent PII Leaks with Built-in Guardrails**:
-   * Automatically scrubs sensitive personally identifiable information (PII) using **Microsoft Presidio** before sending context to LLMs, keeping candidate data secure[span_3](start_span)[span_3](end_span).
+   * Automatically scrubs sensitive personally identifiable information (PII) using **Microsoft Presidio** before sending context to LLMs, keeping candidate data secure.
 4. **Generate High-Converting Multi-Channel Profiles**:
-   * Uses a central structured JSON store (`skills.json`, `projects.json`, `responsibilities.json`, `challenges.json`) to dynamically format ATS-optimized resumes, story-driven LinkedIn About sections, and modern GitHub profile READMEs[span_4](start_span)[span_4](end_span).
+   * Uses a central structured JSON store (`skills.json`, `projects.json`, `responsibilities.json`, `challenges.json`) to dynamically format ATS-optimized resumes, story-driven LinkedIn About sections, and modern GitHub profile READMEs.
 5. **Accelerate Interview Preparation**:
-   * Provides a 2-minute elevator pitch builder ("Tell Me About Yourself"), STAR-formatted technical challenge breakdowns, and architectural cheatsheets tailored to the candidate's core stack[span_5](start_span)[span_5](end_span).
+   * Provides a 2-minute elevator pitch builder ("Tell Me About Yourself"), STAR-formatted technical challenge breakdowns, and architectural cheatsheets tailored to the candidate's core stack.
 
 ---
 ## 🛠️ Key Technical Architecture & Features
 
 ### 1. 📄 Resume Analyser with JD Matching
-* **Dual-Stage Job Description Ingestion**: Supports direct URL scraping powered by **Firecrawl API** with BeautifulSoup fallback and plain text parsing[span_6](start_span)[span_6](end_span).
-* **LangGraph State Machine**: Orchestrates PII scrubbing, extraction, qualification checks (Experience + Skill Match score), and conditional routing (`ShortList` vs `Reject`)[span_7](start_span)[span_7](end_span).
-* **Deep Agent Reflection Loop**: Runs iterative verification on rejected applications to deliver actionable candidate feedback[span_8](start_span)[span_8](end_span).
-* **Observability & Tracing**: Fully instrumented with **LangSmith** (`@traceable`) to track node execution trajectories, token usage, and latency metrics[span_9](start_span)[span_9](end_span).
+* **Dual-Stage Job Description Ingestion**: Supports direct URL scraping powered by **Firecrawl API** with BeautifulSoup fallback and plain text parsing.
+* **LangGraph State Machine**: Orchestrates PII scrubbing, extraction, qualification checks (Experience + Skill Match score), and conditional routing (`ShortList` vs `Reject`).
+* **Deep Agent Reflection Loop**: Runs iterative verification on rejected applications to deliver actionable candidate feedback.
+* **Observability & Tracing**: Fully instrumented with **LangSmith** (`@traceable`) to track node execution trajectories, token usage, and latency metrics.
 
 ### 2. ✍️ Skill Hub & Content Generator Studio
-* **Auto-Parsing Ingestion**: Scrapes PDF resumes into structured, categorized JSON files covering project stacks, job responsibilities, STAR engineering challenges, and credentials[span_10](start_span)[span_10](end_span).
+* **Auto-Parsing Ingestion**: Scrapes PDF resumes into structured, categorized JSON files covering project stacks, job responsibilities, STAR engineering challenges, and credentials.
 * **Multi-Format Content Studio**:
   * **LinkedIn About Section**: Formatted with visual unicode markers, emoji indicators, core expertise matrices, and built-in code block copy functionality.
   * **ATS Resume Content**: Executive summary blocks, impact-driven bullet points, and categorized skills lists.
-  * **GitHub Profile README**: Fully formatted Markdown profile README complete with repository showcases and tech stack badges[span_11](start_span)[span_11](end_span).
+  * **GitHub Profile README**: Fully formatted Markdown profile README complete with repository showcases and tech stack badges.
 
 ### 3. 🎯 AI Interview Copilot
 * **Day-to-Day Responsibilities Quick-Glance**: Instant reference matrix organized by role context.
@@ -80,7 +80,7 @@ Navigating technical job markets requires candidates to demonstrate clear, verif
 ├── database.py                 # Pinecone vector store initialization and retrieval connector
 ├── main.py                     # Primary Streamlit multi-tab application UI controller and LangGraph flow router
 └── requirements.txt            # Python dependencies and version pins
-
+```
 ### Key Highlights of This Structure
 
 * **`core/` Abstraction Layer**: Isolates application schemas and JSON file persistence, keeping UI rendering in `main.py` clean.
